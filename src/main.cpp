@@ -7,7 +7,6 @@
 
 #include <glog/logging.h>
 
-//#include "Singleton.h"
 #include "AudioAlarmServer.h"
 
 using namespace std;
@@ -38,9 +37,6 @@ int main(int argc, char* argv[]) {
 	std::shared_ptr<AudioAlarmServer> ptrAudioAlarmServer;
 	try
 	{
-		/*Singleton<AudioAlarmServer>::instance().Initialize(kMsgQueueSize, std::thread::hardware_concurrency());
-		Singleton<AudioAlarmServer>::instance().RegisterService();
-		Singleton<AudioAlarmServer>::instance().Start();*/
 		ptrAudioAlarmServer = std::make_shared<AudioAlarmServer>();
 		ptrAudioAlarmServer->Initialize(kMsgQueueSize, std::thread::hardware_concurrency());
 		ptrAudioAlarmServer->RegisterService();;
@@ -52,7 +48,6 @@ int main(int argc, char* argv[]) {
 		LOG(ERROR) << "caught exception:"<<e.what();
 	}
 
-	//Singleton<AudioAlarmServer>::instance().Stop();
 	ptrAudioAlarmServer->Stop();
 	google::ShutdownGoogleLogging();
 	return 0;
