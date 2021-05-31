@@ -15,6 +15,7 @@ public:
 
 public:
 	void Initialize(size_t maxMsgQueueSize, size_t thdPoolSize = 4);
+	void RegisterService();
 	void Start();
 	void Stop();
 

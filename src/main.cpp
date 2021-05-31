@@ -17,7 +17,6 @@ static void SignalHandle(const char* data, int size);
 static constexpr size_t kMsgQueueSize = 1000;
 
 int main(int argc, char* argv[]) {
-
 	FLAGS_colorlogtostderr = false;
 	FLAGS_alsologtostderr = true;
 	FLAGS_timestamp_in_logfile_name = true;
@@ -33,14 +32,17 @@ int main(int argc, char* argv[]) {
 	google::InstallFailureSignalHandler();
 	google::InstallFailureWriter(&SignalHandle);
 
+	LOG(INFO) << "start run audio alarm server";
+
 	try
 	{
 		Singleton<AudioAlarmServer>::instance().Initialize(kMsgQueueSize, std::thread::hardware_concurrency());
+		Singleton<AudioAlarmServer>::instance().RegisterService();
 		Singleton<AudioAlarmServer>::instance().Start();
 	}
 	catch (const std::exception& e)
 	{
-		LOG(ERROR) << e.what();
+		LOG(ERROR) << "caught exception:"<<e.what();
 	}
 
 	Singleton<AudioAlarmServer>::instance().Stop();

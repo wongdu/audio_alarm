@@ -33,8 +33,7 @@ void AudioAlarmServer::Initialize(size_t maxMsgQueueSize, size_t thdPoolSize) {
 	ptrMsgQueue = std::make_shared<LockFreeQueueCpp11<AlarmMsg>>(maxMsgQueueSize);
 
 	ptrAlarmService = std::make_shared<AudioAlarmService>();
-	ptrAlarmService->Initialize(shared_from_this());
-
+	
 	std::string server_address("0.0.0.0:50051");
 	ServerBuilder builder;
 	builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
@@ -49,7 +48,14 @@ void AudioAlarmServer::Initialize(size_t maxMsgQueueSize, size_t thdPoolSize) {
 	ptrThreadPool->Start(thdPoolSize);
 }
 
+void AudioAlarmServer::RegisterService() {
+	if (ptrAlarmService) {
+		ptrAlarmService->Initialize(shared_from_this());	
+	}	
+}
+
 void AudioAlarmServer::Start() {
+	LOG(INFO) <<"AudioAlarmServer::Start";
 	if (ptrAlarmServer) {
 		ptrAlarmServer->Wait();
 	}
@@ -77,6 +83,8 @@ void AudioAlarmServer::AddAlarmMsg(const AlarmMsg&& msg) {
 }
 
 void AudioAlarmServer::ProcAlarmMsg() {
+	AlarmMsg alarmMsg;
+	ptrMsgQueue->pop(alarmMsg);
 
 
 }
