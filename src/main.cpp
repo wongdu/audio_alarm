@@ -3,10 +3,11 @@
 #include <string>
 #include <thread>
 #include <fstream>
+#include <memory>
 
 #include <glog/logging.h>
 
-#include "Singleton.h"
+//#include "Singleton.h"
 #include "AudioAlarmServer.h"
 
 using namespace std;
@@ -34,18 +35,25 @@ int main(int argc, char* argv[]) {
 
 	LOG(INFO) << "start run audio alarm server";
 
+	std::shared_ptr<AudioAlarmServer> ptrAudioAlarmServer;
 	try
 	{
-		Singleton<AudioAlarmServer>::instance().Initialize(kMsgQueueSize, std::thread::hardware_concurrency());
+		/*Singleton<AudioAlarmServer>::instance().Initialize(kMsgQueueSize, std::thread::hardware_concurrency());
 		Singleton<AudioAlarmServer>::instance().RegisterService();
-		Singleton<AudioAlarmServer>::instance().Start();
+		Singleton<AudioAlarmServer>::instance().Start();*/
+		ptrAudioAlarmServer = std::make_shared<AudioAlarmServer>();
+		ptrAudioAlarmServer->Initialize(kMsgQueueSize, std::thread::hardware_concurrency());
+		ptrAudioAlarmServer->RegisterService();;
+		ptrAudioAlarmServer->Start();
+
 	}
 	catch (const std::exception& e)
 	{
 		LOG(ERROR) << "caught exception:"<<e.what();
 	}
 
-	Singleton<AudioAlarmServer>::instance().Stop();
+	//Singleton<AudioAlarmServer>::instance().Stop();
+	ptrAudioAlarmServer->Stop();
 	google::ShutdownGoogleLogging();
 	return 0;
 }
