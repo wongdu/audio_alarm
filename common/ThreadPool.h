@@ -20,8 +20,8 @@ namespace audio_alarm{
 	public:
 		ThreadPool& operator=(const ThreadPool&) = delete;
 		ThreadPool(const ThreadPool&) = delete;
-		ThreadPool(ThreadPool&&) = delete;
-		ThreadPool& operator=(ThreadPool&&) = delete;
+		ThreadPool(ThreadPool&&) = default;
+		ThreadPool& operator=(ThreadPool&&) = default;
 
 	public:
 		void Start(int numThreads);

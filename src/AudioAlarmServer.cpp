@@ -7,6 +7,7 @@ using grpc::Server;
 using grpc::ServerBuilder;
 
 using namespace audio_alarm;
+using audio_alarm::ThreadPool;
 
 static constexpr size_t kMinMsgQueueSize = 100;
 static constexpr size_t kMaxMsgQueueSize = 10000;
@@ -44,7 +45,7 @@ void AudioAlarmServer::Initialize(size_t maxMsgQueueSize, size_t thdPoolSize) {
 	ptrAlarmServer = std::move(ptrServer);
 
 	//ptrThreadPool = std::make_shared<ThreadPool>();
-	ptrThreadPool = std::move(std::unique_ptr<ThreadPool>());
+	ptrThreadPool = std::move(std::unique_ptr<ThreadPool>(new ThreadPool));
 	ptrThreadPool->Start(thdPoolSize);
 }
 
