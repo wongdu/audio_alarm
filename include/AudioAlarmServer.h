@@ -11,6 +11,7 @@
 #include "Common.h"
 #include "LockFreeQueueCpp11.h"
 #include "ThreadPool.h"
+#include "CameraSdk.h"
 
 class AudioAlarmServer : public std::enable_shared_from_this<AudioAlarmServer> {
 public:
@@ -22,6 +23,9 @@ public:
 	void RegisterService();
 	void Start();
 	void Stop();
+
+public:
+	void ResetCameraInfo(const std::string& devIp, const std::string& devPort);
 
 public:
 	void AddAlarmMsg(const AlarmMsg&& msg);
@@ -50,6 +54,8 @@ private:
 
 	std::mutex mutexInter;
 	std::map<std::string, std::map<uint32, InterruptMsg>> mapInter;
+
+	std::map<std::string, std::shared_ptr<CameraSdk>> mapAlarmDev;
 
 };
 

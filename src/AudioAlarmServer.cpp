@@ -12,6 +12,8 @@
 #include <glog/logging.h>
 
 #include "AudioAlarmServer.h"
+#include "CameraDh.h"
+#include "CameraHik.h"
 
 #include "teemo/teemo.h"
 
@@ -96,6 +98,10 @@ void AudioAlarmServer::Stop() {
 	}
 }
 
+void AudioAlarmServer::ResetCameraInfo(const std::string& devIp, const std::string& devPort) {
+
+}
+
 void AudioAlarmServer::AddAlarmMsg(const AlarmMsg&& msg) {
 	LOG(INFO) << "add alarm message id:" << msg.msgId;
 	ptrMsgQueue->push(msg);
@@ -150,19 +156,34 @@ void AudioAlarmServer::TaskAlarmMsg() {
 }
 
 void AudioAlarmServer::procAlarmMsg(const AlarmMsg&& msg) {
+	if (!getAudioFile(msg.downloadUrl, msg.fileName, msg.md5Value)) {
+		LOG(ERROR) << "download the audio file failed,message id:" << msg.msgId << ",url:" << msg.downloadUrl;
+	}
+
+	std::shared_ptr<CameraSdk> ptrCamera;
+	if (CameraType::DaHua== msg.cameraType) {
+		ptrCamera.reset(new CameraHik);
+	}
+	else {
+		ptrCamera.reset(new CameraDh);
+	}
+
 
 }
 
 bool AudioAlarmServer::getAudioFile(const std::string& url, const std::string& name, const std::string& value) {
 	if (url.empty() || name.empty() || value.empty()) {
+		LOG(ERROR) << "download the audio file information is incomplete,url:" << url << ",file name:" << name << ",md5Value:" << value;
 		return false;
 	}
 
 	if (checkExists(name, value)) {
+		LOG(INFO) << "the audio file is already exists";
 		return true;
 	}
 
 	if (!downloadFile(url, name)) {
+		LOG(ERROR) << "download failed";
 		return false;
 	}
 
@@ -227,7 +248,7 @@ std::string AudioAlarmServer::getFileMd5sumValue(const std::string& strFilePath)
 	std::vector<char> buf(3);
 	for (size_t i = 0; i < ilen; i++) {
 		std::snprintf(&buf[0], buf.size(), "%02x", MD5result[i]);
-		strcat_s(resArr, &buf[0]);
+		strcat(resArr, &buf[0]);
 	}
 	return std::string(resArr);
 }

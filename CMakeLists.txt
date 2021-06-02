@@ -61,11 +61,12 @@ LINK_DIRECTORIES( ${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/teemo/lib)
 add_executable(audioAlarmServer
     src/CameraDh.cpp
     src/CameraHik.cpp
+    src/CameraSdk.cpp
     grpc/alarm.pb.cc
     grpc/AudioAlarmService.cpp
     grpc/alarm.grpc.pb.cc
     src/AudioAlarmServer.cpp
-    src/ThreadPool.cpp
+    src/ThreadPool.cpp    
     src/main.cpp
 )
 
