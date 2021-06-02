@@ -1,7 +1,11 @@
 #ifndef __Audio_Alarm_Server_H__
 #define __Audio_Alarm_Server_H__
 
+#include <map>
+#include <string>
+#include <mutex>
 #include <memory>
+#include <chrono>
 
 #include "AudioAlarmService.h"
 #include "Common.h"
@@ -21,7 +25,21 @@ public:
 
 public:
 	void AddAlarmMsg(const AlarmMsg&& msg);
-	void ProcAlarmMsg();
+	void TaskAlarmMsg();
+
+private:
+	void procAlarmMsg(const AlarmMsg&& msg);
+	bool getAudioFile(const std::string& url, const std::string& name, const std::string& value);
+	bool downloadFile(const std::string& url, const std::string& name);
+	bool checkExists(const std::string& name, const std::string& value);
+	std::string getFileMd5sumValue(const std::string& strFilePath);
+
+private:
+	struct InterruptMsg {
+		bool bValid;
+		uint32 playDuration;
+		std::chrono::time_point<std::chrono::high_resolution_clock> timePoint;
+	};
 
 private:
 	std::shared_ptr<AudioAlarmService> ptrAlarmService;
@@ -29,6 +47,10 @@ private:
 
 	std::shared_ptr<audio_alarm::LockFreeQueueCpp11<AlarmMsg>> ptrMsgQueue;
 	std::unique_ptr<audio_alarm::ThreadPool> ptrThreadPool;
+
+	std::mutex mutexInter;
+	std::map<std::string, std::map<uint32, InterruptMsg>> mapInter;
+
 };
 
 #endif
