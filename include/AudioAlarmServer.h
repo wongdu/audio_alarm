@@ -25,7 +25,7 @@ public:
 	void Stop();
 
 public:
-	void ResetCameraInfo(const std::string& devIp, const std::string& devPort);
+	void ClearCameraMsg(const std::string& devIp, const std::string& devPort); // new camera information,clear the old alarm message
 
 public:
 	void AddAlarmMsg(const AlarmMsg&& msg);
@@ -37,6 +37,7 @@ private:
 	bool downloadFile(const std::string& url, const std::string& name);
 	bool checkExists(const std::string& name, const std::string& value);
 	std::string getFileMd5sumValue(const std::string& strFilePath);
+	LatestMsgResult procLatestAlarmMsg(const AlarmMsg&& msg);
 
 private:
 	struct InterruptMsg {
@@ -55,7 +56,9 @@ private:
 	std::mutex mutexInter;
 	std::map<std::string, std::map<uint32, InterruptMsg>> mapInter;
 
-	std::map<std::string, std::shared_ptr<CameraSdk>> mapAlarmDev;
+	std::mutex mutexAlarming;
+	std::map<uint32, std::shared_ptr<CameraSdk>> mapAlarmingCameraSdk;
+	std::map<std::string, uint32> mapAlarmingMsgId;
 
 };
 

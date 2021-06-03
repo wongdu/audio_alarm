@@ -54,9 +54,13 @@ include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/include
     ${CMAKE_CURRENT_SOURCE_DIR}/grpc
     ${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/teemo/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/hik/include
 )
 
-LINK_DIRECTORIES( ${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/teemo/lib)
+LINK_DIRECTORIES(
+    ${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/teemo/lib
+    ${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/hik/lib
+)
 
 add_executable(audioAlarmServer
     src/CameraDh.cpp
@@ -75,5 +79,6 @@ target_link_libraries(audioAlarmServer
 	${_GRPC_GRPCPP}
 	${_PROTOBUF_LIBPROTOBUF}
     teemo
+    hcnetsdk
     glog
 )

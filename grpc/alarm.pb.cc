@@ -22,7 +22,7 @@ constexpr AlarmRequest::AlarmRequest(
   ::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized)
   : dev_ip_(&::PROTOBUF_NAMESPACE_ID::internal::fixed_address_empty_string)
   , user_name_(&::PROTOBUF_NAMESPACE_ID::internal::fixed_address_empty_string)
-  , password_(&::PROTOBUF_NAMESPACE_ID::internal::fixed_address_empty_string)
+  , user_password_(&::PROTOBUF_NAMESPACE_ID::internal::fixed_address_empty_string)
   , download_url_(&::PROTOBUF_NAMESPACE_ID::internal::fixed_address_empty_string)
   , file_name_(&::PROTOBUF_NAMESPACE_ID::internal::fixed_address_empty_string)
   , md5_value_(&::PROTOBUF_NAMESPACE_ID::internal::fixed_address_empty_string)
@@ -71,7 +71,7 @@ const ::PROTOBUF_NAMESPACE_ID::uint32 TableStruct_alarm_2eproto::offsets[] PROTO
   PROTOBUF_FIELD_OFFSET(::audioalarm::v1::AlarmRequest, dev_ip_),
   PROTOBUF_FIELD_OFFSET(::audioalarm::v1::AlarmRequest, dev_port_),
   PROTOBUF_FIELD_OFFSET(::audioalarm::v1::AlarmRequest, user_name_),
-  PROTOBUF_FIELD_OFFSET(::audioalarm::v1::AlarmRequest, password_),
+  PROTOBUF_FIELD_OFFSET(::audioalarm::v1::AlarmRequest, user_password_),
   PROTOBUF_FIELD_OFFSET(::audioalarm::v1::AlarmRequest, download_url_),
   PROTOBUF_FIELD_OFFSET(::audioalarm::v1::AlarmRequest, file_name_),
   PROTOBUF_FIELD_OFFSET(::audioalarm::v1::AlarmRequest, md5_value_),
@@ -95,27 +95,28 @@ static ::PROTOBUF_NAMESPACE_ID::Message const * const file_default_instances[] =
 };
 
 const char descriptor_table_protodef_alarm_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) =
-  "\n\013alarm.proto\022\raudioalarm.v1\"\350\001\n\014AlarmRe"
+  "\n\013alarm.proto\022\raudioalarm.v1\"\355\001\n\014AlarmRe"
   "quest\022\016\n\006msg_id\030\001 \001(\r\022.\n\013camera_type\030\002 \001"
   "(\0162\031.audioalarm.v1.CameraType\022\016\n\006dev_ip\030"
   "\003 \001(\t\022\020\n\010dev_port\030\004 \001(\r\022\021\n\tuser_name\030\005 \001"
-  "(\t\022\020\n\010password\030\006 \001(\t\022\024\n\014download_url\030\007 \001"
-  "(\t\022\021\n\tfile_name\030\010 \001(\t\022\021\n\tmd5_value\030\t \001(\t"
-  "\022\025\n\rplay_duration\030\n \001(\r\"H\n\nAlarmReply\022)\n"
-  "\004code\030\001 \001(\0162\033.audioalarm.v1.ResponseCode"
-  "\022\017\n\007message\030\002 \001(\t*-\n\nCameraType\022\013\n\007Unkno"
-  "wn\020\000\022\t\n\005DaHua\020\001\022\007\n\003HiK\020\002*\274\001\n\014ResponseCod"
-  "e\022\n\n\006Ok_200\020\000\022\032\n\026Err_Camera_Unsupported\020"
-  "\001\022\030\n\024Err_Device_Not_Found\020\002\022\037\n\033Err_Devic"
-  "e_Login_Incomplete\020\003\022\035\n\031Err_Audio_File_I"
-  "ncomplete\020\004\022\035\n\031Err_Play_Duration_Not_Set"
-  "\020\005\022\013\n\007Err_500\020\0062[\n\014AlarmService\022K\n\017SetAl"
-  "armMessage\022\033.audioalarm.v1.AlarmRequest\032"
-  "\031.audioalarm.v1.AlarmReply\"\000b\006proto3"
+  "(\t\022\025\n\ruser_password\030\006 \001(\t\022\024\n\014download_ur"
+  "l\030\007 \001(\t\022\021\n\tfile_name\030\010 \001(\t\022\021\n\tmd5_value\030"
+  "\t \001(\t\022\025\n\rplay_duration\030\n \001(\r\"H\n\nAlarmRep"
+  "ly\022)\n\004code\030\001 \001(\0162\033.audioalarm.v1.Respons"
+  "eCode\022\017\n\007message\030\002 \001(\t*-\n\nCameraType\022\013\n\007"
+  "Unknown\020\000\022\t\n\005DaHua\020\001\022\007\n\003HiK\020\002*\330\001\n\014Respon"
+  "seCode\022\n\n\006Ok_200\020\000\022\032\n\026Err_Message_Id_Not"
+  "_Set\020\001\022\032\n\026Err_Camera_Unsupported\020\002\022\030\n\024Er"
+  "r_Device_Not_Found\020\003\022\037\n\033Err_Device_Login"
+  "_Incomplete\020\004\022\035\n\031Err_Audio_File_Incomple"
+  "te\020\005\022\035\n\031Err_Play_Duration_Not_Set\020\006\022\013\n\007E"
+  "rr_500\020\0072[\n\014AlarmService\022K\n\017SetAlarmMess"
+  "age\022\033.audioalarm.v1.AlarmRequest\032\031.audio"
+  "alarm.v1.AlarmReply\"\000b\006proto3"
   ;
 static ::PROTOBUF_NAMESPACE_ID::internal::once_flag descriptor_table_alarm_2eproto_once;
 const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_alarm_2eproto = {
-  false, false, 676, descriptor_table_protodef_alarm_2eproto, "alarm.proto", 
+  false, false, 709, descriptor_table_protodef_alarm_2eproto, "alarm.proto", 
   &descriptor_table_alarm_2eproto_once, nullptr, 0, 2,
   schemas, file_default_instances, TableStruct_alarm_2eproto::offsets,
   file_level_metadata_alarm_2eproto, file_level_enum_descriptors_alarm_2eproto, file_level_service_descriptors_alarm_2eproto,
@@ -158,6 +159,7 @@ bool ResponseCode_IsValid(int value) {
     case 4:
     case 5:
     case 6:
+    case 7:
       return true;
     default:
       return false;
@@ -190,9 +192,9 @@ AlarmRequest::AlarmRequest(const AlarmRequest& from)
     user_name_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, from._internal_user_name(), 
       GetArena());
   }
-  password_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
-  if (!from._internal_password().empty()) {
-    password_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, from._internal_password(), 
+  user_password_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+  if (!from._internal_user_password().empty()) {
+    user_password_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, from._internal_user_password(), 
       GetArena());
   }
   download_url_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
@@ -219,7 +221,7 @@ AlarmRequest::AlarmRequest(const AlarmRequest& from)
 void AlarmRequest::SharedCtor() {
 dev_ip_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 user_name_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
-password_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+user_password_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 download_url_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 file_name_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 md5_value_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
@@ -239,7 +241,7 @@ void AlarmRequest::SharedDtor() {
   GOOGLE_DCHECK(GetArena() == nullptr);
   dev_ip_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   user_name_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
-  password_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+  user_password_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   download_url_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   file_name_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   md5_value_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
@@ -263,7 +265,7 @@ void AlarmRequest::Clear() {
 
   dev_ip_.ClearToEmpty();
   user_name_.ClearToEmpty();
-  password_.ClearToEmpty();
+  user_password_.ClearToEmpty();
   download_url_.ClearToEmpty();
   file_name_.ClearToEmpty();
   md5_value_.ClearToEmpty();
@@ -320,12 +322,12 @@ const char* AlarmRequest::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_I
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
-      // string password = 6;
+      // string user_password = 6;
       case 6:
         if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 50)) {
-          auto str = _internal_mutable_password();
+          auto str = _internal_mutable_user_password();
           ptr = ::PROTOBUF_NAMESPACE_ID::internal::InlineGreedyStringParser(str, ptr, ctx);
-          CHK_(::PROTOBUF_NAMESPACE_ID::internal::VerifyUTF8(str, "audioalarm.v1.AlarmRequest.password"));
+          CHK_(::PROTOBUF_NAMESPACE_ID::internal::VerifyUTF8(str, "audioalarm.v1.AlarmRequest.user_password"));
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
@@ -430,14 +432,14 @@ failure:
         5, this->_internal_user_name(), target);
   }
 
-  // string password = 6;
-  if (this->password().size() > 0) {
+  // string user_password = 6;
+  if (this->user_password().size() > 0) {
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
-      this->_internal_password().data(), static_cast<int>(this->_internal_password().length()),
+      this->_internal_user_password().data(), static_cast<int>(this->_internal_user_password().length()),
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "audioalarm.v1.AlarmRequest.password");
+      "audioalarm.v1.AlarmRequest.user_password");
     target = stream->WriteStringMaybeAliased(
-        6, this->_internal_password(), target);
+        6, this->_internal_user_password(), target);
   }
 
   // string download_url = 7;
@@ -506,11 +508,11 @@ size_t AlarmRequest::ByteSizeLong() const {
         this->_internal_user_name());
   }
 
-  // string password = 6;
-  if (this->password().size() > 0) {
+  // string user_password = 6;
+  if (this->user_password().size() > 0) {
     total_size += 1 +
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_password());
+        this->_internal_user_password());
   }
 
   // string download_url = 7;
@@ -598,8 +600,8 @@ void AlarmRequest::MergeFrom(const AlarmRequest& from) {
   if (from.user_name().size() > 0) {
     _internal_set_user_name(from._internal_user_name());
   }
-  if (from.password().size() > 0) {
-    _internal_set_password(from._internal_password());
+  if (from.user_password().size() > 0) {
+    _internal_set_user_password(from._internal_user_password());
   }
   if (from.download_url().size() > 0) {
     _internal_set_download_url(from._internal_download_url());
@@ -647,7 +649,7 @@ void AlarmRequest::InternalSwap(AlarmRequest* other) {
   _internal_metadata_.Swap<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(&other->_internal_metadata_);
   dev_ip_.Swap(&other->dev_ip_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
   user_name_.Swap(&other->user_name_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
-  password_.Swap(&other->password_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
+  user_password_.Swap(&other->user_password_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
   download_url_.Swap(&other->download_url_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
   file_name_.Swap(&other->file_name_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
   md5_value_.Swap(&other->md5_value_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());

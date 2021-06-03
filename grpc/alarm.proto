@@ -10,12 +10,13 @@ enum CameraType {
 
 enum ResponseCode {
 	Ok_200 = 0;                           // successed
-	Err_Camera_Unsupported = 1;           // camera is not supported
-	Err_Device_Not_Found = 2;             // device is not found
-	Err_Device_Login_Incomplete = 3;      // user information is incomplete
-	Err_Audio_File_Incomplete = 4;        // audio file information is incomplete
-	Err_Play_Duration_Not_Set = 5;        // play duration is not set
-	Err_500 = 6;                          // server inner error
+	Err_Message_Id_Not_Set=1;             // message id is not set
+	Err_Camera_Unsupported = 2;           // camera is not supported
+	Err_Device_Not_Found = 3;             // device is not found
+	Err_Device_Login_Incomplete = 4;      // user information is incomplete
+	Err_Audio_File_Incomplete = 5;        // audio file information is incomplete
+	Err_Play_Duration_Not_Set = 6;        // play duration is not set
+	Err_500 = 7;                          // server inner error
 }
 
 // The request message
@@ -25,7 +26,7 @@ message AlarmRequest {
 	string dev_ip = 3;
 	uint32 dev_port = 4;
 	string user_name = 5;
-	string password = 6;
+	string user_password = 6;
     string download_url = 7;
     string file_name = 8;
     string md5_value = 9;

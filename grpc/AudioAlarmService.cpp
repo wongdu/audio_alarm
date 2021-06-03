@@ -44,10 +44,17 @@ void AudioAlarmService::Initialize(std::weak_ptr<AudioAlarmServer> alarmServer) 
 	alarmMsg.devPort = request->dev_port();
 	alarmMsg.playDuration = request->play_duration();
 	alarmMsg.userName = request->user_name();
-	alarmMsg.password = request->password();
+	alarmMsg.userPassword = request->user_password();
 	alarmMsg.downloadUrl = request->download_url();
 	alarmMsg.fileName = request->file_name();
 	alarmMsg.md5Value = request->md5_value();
+
+	if (alarmMsg.msgId == 0) {
+		LOG(ERROR) << "messageId should not be zero";
+		response->set_code(audioalarm::v1::Err_Message_Id_Not_Set);
+		response->set_message("messageId should not be zero");
+		return ::grpc::Status(::grpc::StatusCode::INVALID_ARGUMENT, "");
+	}
 
 	if (alarmMsg.devIp.empty() || alarmMsg.devPort == 0) {
 		LOG(ERROR) << "camera information is incomplete, can not find the device";
@@ -56,7 +63,7 @@ void AudioAlarmService::Initialize(std::weak_ptr<AudioAlarmServer> alarmServer) 
 		return ::grpc::Status(::grpc::StatusCode::INVALID_ARGUMENT, "");
 	}
 
-	if (alarmMsg.userName.empty() || alarmMsg.password.empty()) {
+	if (alarmMsg.userName.empty() || alarmMsg.userPassword.empty()) {
 		LOG(ERROR) << "user information is incomplete";
 		response->set_code(audioalarm::v1::Err_Device_Login_Incomplete);
 		response->set_message("user information is incomplete");
@@ -75,10 +82,6 @@ void AudioAlarmService::Initialize(std::weak_ptr<AudioAlarmServer> alarmServer) 
 		response->set_code(audioalarm::v1::Err_Play_Duration_Not_Set);
 		response->set_message("play duration should not be zero");
 		return ::grpc::Status(::grpc::StatusCode::INVALID_ARGUMENT, "");
-	}
-
-	if (alarmMsg.devPort == 0 || alarmMsg.playDuration == 0) {
-
 	}
 
 	if (auto spt = weakPtrAlarmServer.lock()) {

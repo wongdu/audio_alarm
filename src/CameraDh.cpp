@@ -1,6 +1,6 @@
 #include "CameraDh.h"
 
-CameraDh::CameraDh() {
+CameraDh::CameraDh() :lLoginID(-1), lVoiceHanle(-1) {
 
 }
 
@@ -8,15 +8,19 @@ CameraDh::~CameraDh() {
 
 }
 
-void CameraDh::InitNetsdk() {
+bool CameraDh::LoginDvr(const std::string& ip, const uint32 port, const std::string& name, const std::string& password) {
 
 }
 
-void CameraDh::SetAudioFileName(const std::string fileName) {
+void CameraDh::LogoutDvr() {
 
 }
 
-void CameraDh::UpdateAlarmInfo(const std::string fileName, uint32 duration) {
+void CameraDh::SetAudioFileName(const std::string& fileName, uint32 duration) {
+
+}
+
+void CameraDh::UpdateAlarmInfo(const std::string& fileName, uint32 duration) {
 
 }
 
@@ -24,3 +28,6 @@ void CameraDh::StartAlarm() {
 
 }
 
+std::string CameraDh::GetDevInfo() {
+	return devIp + "_" + std::to_string(devPort);
+}

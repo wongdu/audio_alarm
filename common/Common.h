@@ -11,6 +11,12 @@ enum class CameraType : unsigned char {
 	HiK
 };
 
+enum class LatestMsgResult :unsigned char {
+	DownLoadFailed,
+	DownLoadOnly,
+	Processed,
+};
+
 struct AlarmMsg {
 	uint32 msgId;
 	CameraType cameraType;
@@ -18,7 +24,7 @@ struct AlarmMsg {
 	uint32 devPort;
 	uint32 playDuration;
 	std::string userName;
-	std::string password;
+	std::string userPassword;
 	std::string downloadUrl;
 	std::string fileName;
 	std::string md5Value;

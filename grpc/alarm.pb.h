@@ -100,12 +100,13 @@ inline bool CameraType_Parse(
 }
 enum ResponseCode : int {
   Ok_200 = 0,
-  Err_Camera_Unsupported = 1,
-  Err_Device_Not_Found = 2,
-  Err_Device_Login_Incomplete = 3,
-  Err_Audio_File_Incomplete = 4,
-  Err_Play_Duration_Not_Set = 5,
-  Err_500 = 6,
+  Err_Message_Id_Not_Set = 1,
+  Err_Camera_Unsupported = 2,
+  Err_Device_Not_Found = 3,
+  Err_Device_Login_Incomplete = 4,
+  Err_Audio_File_Incomplete = 5,
+  Err_Play_Duration_Not_Set = 6,
+  Err_500 = 7,
   ResponseCode_INT_MIN_SENTINEL_DO_NOT_USE_ = std::numeric_limits<::PROTOBUF_NAMESPACE_ID::int32>::min(),
   ResponseCode_INT_MAX_SENTINEL_DO_NOT_USE_ = std::numeric_limits<::PROTOBUF_NAMESPACE_ID::int32>::max()
 };
@@ -245,7 +246,7 @@ class AlarmRequest PROTOBUF_FINAL :
   enum : int {
     kDevIpFieldNumber = 3,
     kUserNameFieldNumber = 5,
-    kPasswordFieldNumber = 6,
+    kUserPasswordFieldNumber = 6,
     kDownloadUrlFieldNumber = 7,
     kFileNameFieldNumber = 8,
     kMd5ValueFieldNumber = 9,
@@ -286,20 +287,20 @@ class AlarmRequest PROTOBUF_FINAL :
   std::string* _internal_mutable_user_name();
   public:
 
-  // string password = 6;
-  void clear_password();
-  const std::string& password() const;
-  void set_password(const std::string& value);
-  void set_password(std::string&& value);
-  void set_password(const char* value);
-  void set_password(const char* value, size_t size);
-  std::string* mutable_password();
-  std::string* release_password();
-  void set_allocated_password(std::string* password);
+  // string user_password = 6;
+  void clear_user_password();
+  const std::string& user_password() const;
+  void set_user_password(const std::string& value);
+  void set_user_password(std::string&& value);
+  void set_user_password(const char* value);
+  void set_user_password(const char* value, size_t size);
+  std::string* mutable_user_password();
+  std::string* release_user_password();
+  void set_allocated_user_password(std::string* user_password);
   private:
-  const std::string& _internal_password() const;
-  void _internal_set_password(const std::string& value);
-  std::string* _internal_mutable_password();
+  const std::string& _internal_user_password() const;
+  void _internal_set_user_password(const std::string& value);
+  std::string* _internal_mutable_user_password();
   public:
 
   // string download_url = 7;
@@ -395,7 +396,7 @@ class AlarmRequest PROTOBUF_FINAL :
   typedef void DestructorSkippable_;
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr dev_ip_;
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr user_name_;
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr password_;
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr user_password_;
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr download_url_;
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr file_name_;
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr md5_value_;
@@ -754,65 +755,65 @@ inline void AlarmRequest::set_allocated_user_name(std::string* user_name) {
   // @@protoc_insertion_point(field_set_allocated:audioalarm.v1.AlarmRequest.user_name)
 }
 
-// string password = 6;
-inline void AlarmRequest::clear_password() {
-  password_.ClearToEmpty();
+// string user_password = 6;
+inline void AlarmRequest::clear_user_password() {
+  user_password_.ClearToEmpty();
 }
-inline const std::string& AlarmRequest::password() const {
-  // @@protoc_insertion_point(field_get:audioalarm.v1.AlarmRequest.password)
-  return _internal_password();
+inline const std::string& AlarmRequest::user_password() const {
+  // @@protoc_insertion_point(field_get:audioalarm.v1.AlarmRequest.user_password)
+  return _internal_user_password();
 }
-inline void AlarmRequest::set_password(const std::string& value) {
-  _internal_set_password(value);
-  // @@protoc_insertion_point(field_set:audioalarm.v1.AlarmRequest.password)
+inline void AlarmRequest::set_user_password(const std::string& value) {
+  _internal_set_user_password(value);
+  // @@protoc_insertion_point(field_set:audioalarm.v1.AlarmRequest.user_password)
 }
-inline std::string* AlarmRequest::mutable_password() {
-  // @@protoc_insertion_point(field_mutable:audioalarm.v1.AlarmRequest.password)
-  return _internal_mutable_password();
+inline std::string* AlarmRequest::mutable_user_password() {
+  // @@protoc_insertion_point(field_mutable:audioalarm.v1.AlarmRequest.user_password)
+  return _internal_mutable_user_password();
 }
-inline const std::string& AlarmRequest::_internal_password() const {
-  return password_.Get();
+inline const std::string& AlarmRequest::_internal_user_password() const {
+  return user_password_.Get();
 }
-inline void AlarmRequest::_internal_set_password(const std::string& value) {
+inline void AlarmRequest::_internal_set_user_password(const std::string& value) {
   
-  password_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, value, GetArena());
+  user_password_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, value, GetArena());
 }
-inline void AlarmRequest::set_password(std::string&& value) {
+inline void AlarmRequest::set_user_password(std::string&& value) {
   
-  password_.Set(
+  user_password_.Set(
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, ::std::move(value), GetArena());
-  // @@protoc_insertion_point(field_set_rvalue:audioalarm.v1.AlarmRequest.password)
+  // @@protoc_insertion_point(field_set_rvalue:audioalarm.v1.AlarmRequest.user_password)
 }
-inline void AlarmRequest::set_password(const char* value) {
+inline void AlarmRequest::set_user_password(const char* value) {
   GOOGLE_DCHECK(value != nullptr);
   
-  password_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, ::std::string(value), GetArena());
-  // @@protoc_insertion_point(field_set_char:audioalarm.v1.AlarmRequest.password)
+  user_password_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, ::std::string(value), GetArena());
+  // @@protoc_insertion_point(field_set_char:audioalarm.v1.AlarmRequest.user_password)
 }
-inline void AlarmRequest::set_password(const char* value,
+inline void AlarmRequest::set_user_password(const char* value,
     size_t size) {
   
-  password_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, ::std::string(
+  user_password_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, ::std::string(
       reinterpret_cast<const char*>(value), size), GetArena());
-  // @@protoc_insertion_point(field_set_pointer:audioalarm.v1.AlarmRequest.password)
+  // @@protoc_insertion_point(field_set_pointer:audioalarm.v1.AlarmRequest.user_password)
 }
-inline std::string* AlarmRequest::_internal_mutable_password() {
+inline std::string* AlarmRequest::_internal_mutable_user_password() {
   
-  return password_.Mutable(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, GetArena());
+  return user_password_.Mutable(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, GetArena());
 }
-inline std::string* AlarmRequest::release_password() {
-  // @@protoc_insertion_point(field_release:audioalarm.v1.AlarmRequest.password)
-  return password_.Release(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
+inline std::string* AlarmRequest::release_user_password() {
+  // @@protoc_insertion_point(field_release:audioalarm.v1.AlarmRequest.user_password)
+  return user_password_.Release(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
 }
-inline void AlarmRequest::set_allocated_password(std::string* password) {
-  if (password != nullptr) {
+inline void AlarmRequest::set_allocated_user_password(std::string* user_password) {
+  if (user_password != nullptr) {
     
   } else {
     
   }
-  password_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), password,
+  user_password_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), user_password,
       GetArena());
-  // @@protoc_insertion_point(field_set_allocated:audioalarm.v1.AlarmRequest.password)
+  // @@protoc_insertion_point(field_set_allocated:audioalarm.v1.AlarmRequest.user_password)
 }
 
 // string download_url = 7;

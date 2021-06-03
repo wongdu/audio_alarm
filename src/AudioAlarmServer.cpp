@@ -11,6 +11,8 @@
 
 #include <glog/logging.h>
 
+#include "HCNetSDK.h"
+
 #include "AudioAlarmServer.h"
 #include "CameraDh.h"
 #include "CameraHik.h"
@@ -27,7 +29,6 @@ using namespace teemo;
 static constexpr size_t kMinMsgQueueSize = 100;
 static constexpr size_t kMaxMsgQueueSize = 10000;
 static constexpr size_t kDownloadPolicyValue = 1024000 * 5;
-
 
 static constexpr int MaxDataBuff = 1024;
 static constexpr int Md5Length = 16;
@@ -69,6 +70,12 @@ void AudioAlarmServer::Initialize(size_t maxMsgQueueSize, size_t thdPoolSize) {
 	//ptrThreadPool = std::make_shared<ThreadPool>();
 	ptrThreadPool = std::move(std::unique_ptr<ThreadPool>(new ThreadPool));
 	ptrThreadPool->Start(thdPoolSize);
+
+	//hikNetSdk initialize
+	NET_DVR_Init();
+
+	//dahuaNetSdk initialize
+
 }
 
 void AudioAlarmServer::RegisterService() {
@@ -96,9 +103,15 @@ void AudioAlarmServer::Stop() {
 	while (ptrMsgQueue->pop(msg)) {
 
 	}
+
+	//hikNetSdk unInitialize
+	NET_DVR_Cleanup();
+
+	//dahuaNetSdk unInitialize
+
 }
 
-void AudioAlarmServer::ResetCameraInfo(const std::string& devIp, const std::string& devPort) {
+void AudioAlarmServer::ClearCameraMsg(const std::string& devIp, const std::string& devPort) {
 
 }
 
@@ -108,6 +121,21 @@ void AudioAlarmServer::AddAlarmMsg(const AlarmMsg&& msg) {
 
 	std::string strDev = msg.devIp + "_" + std::to_string(msg.devPort);
 	uint32 msgId = msg.msgId;
+
+	{
+		std::lock_guard<std::mutex> lk(mutexAlarming);
+		uint32 processingId = mapAlarmingMsgId[strDev];
+		if (processingId) {
+			//the current device is processing old alarm message
+			LatestMsgResult msgResult = procLatestAlarmMsg(std::move(msg));
+			if (LatestMsgResult::DownLoadOnly != msgResult) {
+				return;
+			}
+		}
+		else {
+			mapAlarmingMsgId.erase(strDev);
+		}
+	}
 
 	InterruptMsg interMsg;
 	interMsg.bValid = true;
@@ -161,14 +189,33 @@ void AudioAlarmServer::procAlarmMsg(const AlarmMsg&& msg) {
 	}
 
 	std::shared_ptr<CameraSdk> ptrCamera;
-	if (CameraType::DaHua== msg.cameraType) {
+	if (CameraType::DaHua == msg.cameraType) {
 		ptrCamera.reset(new CameraHik);
 	}
 	else {
 		ptrCamera.reset(new CameraDh);
 	}
 
+	std::string strDev = msg.devIp + "_" + std::to_string(msg.devPort);
+	{
+		std::lock_guard<std::mutex> lk(mutexAlarming);
+		mapAlarmingMsgId[strDev] = msg.msgId;
+		mapAlarmingCameraSdk[msg.msgId] = ptrCamera;
+	}
 
+	if (!ptrCamera->LoginDvr(msg.devIp, msg.devPort, msg.userName, msg.userPassword)) {
+		std::lock_guard<std::mutex> lk(mutexAlarming);
+		mapAlarmingMsgId.erase(strDev);
+		mapAlarmingCameraSdk.erase(msg.msgId);
+		return;
+	}
+
+	ptrCamera->SetAudioFileName(msg.fileName, msg.playDuration);
+	ptrCamera->StartAlarm();
+
+	std::lock_guard<std::mutex> lk(mutexAlarming);
+	mapAlarmingMsgId.erase(strDev);
+	mapAlarmingCameraSdk.erase(msg.msgId);
 }
 
 bool AudioAlarmServer::getAudioFile(const std::string& url, const std::string& name, const std::string& value) {
@@ -251,4 +298,28 @@ std::string AudioAlarmServer::getFileMd5sumValue(const std::string& strFilePath)
 		strcat(resArr, &buf[0]);
 	}
 	return std::string(resArr);
+}
+
+LatestMsgResult AudioAlarmServer::procLatestAlarmMsg(const AlarmMsg&& msg) {
+	if (!getAudioFile(msg.downloadUrl, msg.fileName, msg.md5Value)) {
+		LOG(ERROR) << "download failed when process the latest alarm message,message id:" << msg.msgId << ",url:" << msg.downloadUrl;
+		return LatestMsgResult::DownLoadFailed;
+	}
+
+	std::string strDev = msg.devIp + "_" + std::to_string(msg.devPort);
+	{
+		std::lock_guard<std::mutex> lk(mutexAlarming);
+
+		uint32 id = mapAlarmingMsgId[strDev];
+		if (id) {
+			std::shared_ptr<CameraSdk> ptrCamera = mapAlarmingCameraSdk[id];
+			ptrCamera->UpdateAlarmInfo(msg.fileName, msg.playDuration);
+			return LatestMsgResult::Processed;
+		}
+		else {
+			mapAlarmingMsgId.erase(strDev);
+		}
+
+		return LatestMsgResult::DownLoadOnly;
+	}
 }
