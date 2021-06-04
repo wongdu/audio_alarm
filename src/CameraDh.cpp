@@ -1,7 +1,8 @@
 #include "CameraDh.h"
 
-CameraDh::CameraDh() :lLoginID(-1), lVoiceHanle(-1) {
-
+CameraDh::CameraDh() {
+	lLoginID = -1;
+	lVoiceHanle = -1;
 }
 
 CameraDh::~CameraDh() {

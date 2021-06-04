@@ -1,6 +1,11 @@
 #ifndef __Camera_Hik_H__
 #define __Camera_Hik_H__
 
+#include <chrono>
+#include <mutex>
+#include <fstream>
+//#include <memory>
+
 #include "CameraSdk.h"
 #include "HCNetSDK.h"
 
@@ -21,10 +26,19 @@ private:
 	void sendAudioAlarmData();
 
 private:
+	static constexpr uint32 G711_AUDDECSIZE = 320;
 	//long lLoginID;
 
-	void* m_pEncoder;//g722 encoder
-
+	//void* m_pEncoder;//g722 encoder
+	void* m_pG711Enc;
+	std::mutex mutexAudioFile;
+	//std::unique_ptr<std::ifstream> ptrAudioFile;
+	std::ifstream audioFile;
+	
+	BYTE G711EncBufA[G711_AUDDECSIZE];
+	char fileContentBuff[G711_AUDDECSIZE];
+	std::chrono::time_point<std::chrono::high_resolution_clock> timePointStart;
+	std::chrono::time_point<std::chrono::high_resolution_clock> timePointCurrent;
 };
 
 #endif
