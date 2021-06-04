@@ -1,4 +1,7 @@
 #include <cassert>
+#include <thread>
+#include <chrono>
+
 #include <glog/logging.h>
 
 #include "CameraHik.h"
@@ -39,8 +42,8 @@ bool CameraHik::LoginDvr(const std::string& ip, const uint32 port, const std::st
 
 	NET_DVR_AUDIOENC_INFO struEncInfo711 = { 0 };
 	m_pG711Enc = NET_DVR_InitG711Encoder(&struEncInfo711);
-	if (nullptr == m_pG711Enc) {
-		LOG(ERROR) << "initialize audio encoder failed";
+	if ((long)m_pG711Enc == -1) {
+		LOG(ERROR) << "initialize audio encoder failed:" << NET_DVR_GetLastError() << ",message:" << NET_DVR_GetErrorMsg();
 		return false;	
 	}
 
@@ -70,6 +73,7 @@ void CameraHik::UpdateAlarmInfo(const std::string& fileName, uint32 duration) {
 		playDuration = duration;
 
 		if (audioFile.is_open()) {
+			LOG(INFO) << "update the audio file name:" << fileName <<" failed";
 			audioFile.close();
 		}
 
@@ -109,14 +113,13 @@ void CameraHik::sendAudioAlarmData() {
 	}
 
 	if (!audioFile.is_open()) {
+		LOG(INFO) << "open the audio file name:" << strAudioFileName << " failed when start send file content";
 		return;
 	}
 
 	timePointStart= std::chrono::high_resolution_clock::now();
 	while (true)
 	{
-		
-
 		timePointCurrent = std::chrono::high_resolution_clock::now();
 		std::chrono::duration<double> diff = timePointCurrent - timePointStart;
 		if (diff.count() >= playDuration) {
@@ -131,7 +134,8 @@ void CameraHik::sendAudioAlarmData() {
 				audioFile.clear();
 				audioFile.seekg(0, std::ios::beg);
 			}
-
+			
+			memset(fileContentBuff, 0, G711_AUDDECSIZE);
 			audioFile.read(fileContentBuff, G711_AUDDECSIZE);
 		}
 				
@@ -148,6 +152,9 @@ void CameraHik::sendAudioAlarmData() {
 			LOG(ERROR) << "start voice communication failed,error code:" << NET_DVR_GetLastError() << ",message:" << NET_DVR_GetErrorMsg();
 			continue;		
 		}
+		//std::this_thread::sleep_for(20ms);
+		//std::this_thread::sleep_for(std::chrono::microseconds(20));
+		std::this_thread::sleep_for(std::chrono::milliseconds(10));
 	}
 
 	LOG(INFO) << "send audio alarm data complete";

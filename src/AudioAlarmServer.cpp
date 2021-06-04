@@ -164,18 +164,24 @@ void AudioAlarmServer::TaskAlarmMsg() {
 	AlarmMsg alarmMsg;
 	ptrMsgQueue->pop(alarmMsg);
 
+	LOG(INFO) << "one thread pool work start,message id:" << alarmMsg.msgId;
 	uint32 msgId = alarmMsg.msgId;
 	std::string strDev = alarmMsg.devIp + "_" + std::to_string(alarmMsg.devPort);
 
 	{
 		std::lock_guard<std::mutex> lk(mutexInter);
 		std::map<uint32, InterruptMsg> mapDev = mapInter[strDev];
+		if (mapDev.size() == 0) {
+			mapInter.erase(strDev);
+			procAlarmMsg(std::move(alarmMsg));
+			return;
+		}
 		InterruptMsg interMsg = mapDev[msgId];
 		mapDev.erase(msgId);
 		if (mapDev.size() == 0) {
 			mapInter.erase(strDev);
 		}
-		if (!interMsg.bValid) {
+		if (interMsg.playDuration && !interMsg.bValid) {
 			return;
 		}
 	}
@@ -186,14 +192,16 @@ void AudioAlarmServer::TaskAlarmMsg() {
 void AudioAlarmServer::procAlarmMsg(const AlarmMsg&& msg) {
 	if (!getAudioFile(msg.downloadUrl, msg.fileName, msg.md5Value)) {
 		LOG(ERROR) << "download the audio file failed,message id:" << msg.msgId << ",url:" << msg.downloadUrl;
+		return;
 	}
 
+	LOG(INFO) << "get audio file successful,message id:" << msg.msgId << ",camera type:" << (CameraType::DaHua == msg.cameraType ? "daHua" : "hiK");
 	std::shared_ptr<CameraSdk> ptrCamera;
 	if (CameraType::DaHua == msg.cameraType) {
-		ptrCamera.reset(new CameraHik);
+		ptrCamera.reset(new CameraDh);
 	}
 	else {
-		ptrCamera.reset(new CameraDh);
+		ptrCamera.reset(new CameraHik);
 	}
 
 	std::string strDev = msg.devIp + "_" + std::to_string(msg.devPort);
@@ -204,14 +212,17 @@ void AudioAlarmServer::procAlarmMsg(const AlarmMsg&& msg) {
 	}
 
 	if (!ptrCamera->LoginDvr(msg.devIp, msg.devPort, msg.userName, msg.userPassword)) {
+		LOG(ERROR) << "login the camera failed";
 		std::lock_guard<std::mutex> lk(mutexAlarming);
 		mapAlarmingMsgId.erase(strDev);
 		mapAlarmingCameraSdk.erase(msg.msgId);
 		return;
 	}
 
+	LOG(INFO) << "set the audio file name:" << msg.fileName << ",play duration:" << msg.playDuration;
 	ptrCamera->SetAudioFileName(msg.fileName, msg.playDuration);
 	ptrCamera->StartAlarm();
+	ptrCamera->LogoutDvr();
 
 	std::lock_guard<std::mutex> lk(mutexAlarming);
 	mapAlarmingMsgId.erase(strDev);
@@ -233,8 +244,10 @@ bool AudioAlarmServer::getAudioFile(const std::string& url, const std::string& n
 		LOG(ERROR) << "download failed";
 		return false;
 	}
+	std::string strMd5Value = getFileMd5sumValue(name);
+	LOG(INFO) << "start check the md5Value:" << value << ",current value:" << strMd5Value;
 
-	return value == getFileMd5sumValue(name);;
+	return value == strMd5Value;
 }
 
 bool AudioAlarmServer::downloadFile(const std::string& url, const std::string& name) {

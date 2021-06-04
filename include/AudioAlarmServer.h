@@ -44,6 +44,12 @@ private:
 		bool bValid;
 		uint32 playDuration;
 		std::chrono::time_point<std::chrono::high_resolution_clock> timePoint;
+
+		InterruptMsg() {
+			bValid = false;
+			playDuration = 0;
+			timePoint = std::chrono::high_resolution_clock::now();		
+		}
 	};
 
 private:
