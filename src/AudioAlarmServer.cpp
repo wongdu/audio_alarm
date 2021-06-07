@@ -123,19 +123,21 @@ void AudioAlarmServer::AddAlarmMsg(const AlarmMsg&& msg) {
 	std::string strDev = msg.devIp + "_" + std::to_string(msg.devPort);
 	uint32 msgId = msg.msgId;
 
+	uint32 processingId = 0;
 	{
 		std::lock_guard<std::mutex> lk(mutexAlarming);
-		uint32 processingId = mapAlarmingMsgId[strDev];
-		if (processingId) {
-			//the current device is processing old alarm message
-			LatestMsgResult msgResult = procLatestAlarmMsg(std::move(msg));
-			if (LatestMsgResult::DownLoadOnly != msgResult) {
-				return;
-			}
+		processingId = mapAlarmingMsgId[strDev];
+	}
+
+	if (processingId) {
+		//the current device is processing old alarm message
+		LatestMsgResult msgResult = procLatestAlarmMsg(std::move(msg));
+		if (LatestMsgResult::DownLoadOnly != msgResult) {
+			return;
 		}
-		else {
-			mapAlarmingMsgId.erase(strDev);
-		}
+	}
+	else {
+		mapAlarmingMsgId.erase(strDev);
 	}
 
 	LOG(INFO) << "add alarm message into the thread poll,message id:" << msg.msgId;
@@ -398,6 +400,7 @@ bool AudioAlarmServer::pcmRateDownSample(const std::string& name, const std::str
 		outputFile.write(pcmDataBuff, PcmDataBufferLength / 2);
 	}
 
+	LOG(INFO) << "down sample audio file complete,file name:" <<name ;
 	outputFile.flush();
 	ifile.close();
 	outputFile.close();
