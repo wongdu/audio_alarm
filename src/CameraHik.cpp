@@ -169,7 +169,7 @@ void CALLBACK  fDVRVoiceDataCallBack(LONG  lVoiceComHandle, char* pRecvDataBuffe
 		LOG(INFO) << "local audio data" ;
 		break;
 	case 1:
-		LOG(INFO) << "Input data size:"<< dwBufSize;
+		//LOG(INFO) << "Input data size:"<< dwBufSize;
 		break;
 	case 2:
 		LOG(INFO) << "audio sending and receiving thread exit";

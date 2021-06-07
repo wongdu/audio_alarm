@@ -33,6 +33,7 @@ static constexpr size_t kDownloadPolicyValue = 1024000 * 5;
 static constexpr int MaxDataBuff = 1024;
 static constexpr int Md5Length = 16;
 static constexpr int Md5HexResultLength = 64;
+static constexpr int PcmDataBufferLength = 4;
 
 //static LockFreeQueueCpp11<AlarmMsg> queueMsg(1000);
 
@@ -195,6 +196,11 @@ void AudioAlarmServer::procAlarmMsg(const AlarmMsg&& msg) {
 		return;
 	}
 
+	if (!pcmRateDownSample(msg.fileName, msg.md5Value)) {
+		LOG(ERROR) << "down sample failed,message id:" << msg.msgId << ",url:" << msg.downloadUrl;
+		return ;
+	}
+
 	LOG(INFO) << "get audio file successful,message id:" << msg.msgId << ",camera type:" << (CameraType::DaHua == msg.cameraType ? "daHua" : "hiK");
 	std::shared_ptr<CameraSdk> ptrCamera;
 	if (CameraType::DaHua == msg.cameraType) {
@@ -220,7 +226,10 @@ void AudioAlarmServer::procAlarmMsg(const AlarmMsg&& msg) {
 	}
 
 	LOG(INFO) << "set the audio file name:" << msg.fileName << ",play duration:" << msg.playDuration;
-	ptrCamera->SetAudioFileName(msg.fileName, msg.playDuration);
+	std::string strOutputPcmName = msg.fileName.substr(0, msg.fileName.find_last_of("."));
+	strOutputPcmName = strOutputPcmName + "_" + msg.md5Value + ".pcm";
+	ptrCamera->SetAudioFileName(strOutputPcmName, msg.playDuration);
+
 	ptrCamera->StartAlarm();
 	ptrCamera->LogoutDvr();
 
@@ -302,6 +311,8 @@ std::string AudioAlarmServer::getFileMd5sumValue(const std::string& strFilePath)
 			MD5_Update(&md5_ctx, DataBuff, length);
 		}
 	}
+	ifile.close();
+
 	MD5_Final(MD5result, &md5_ctx);  //got the MD5 value
 	char resArr[Md5HexResultLength] = { 0 };
 	int ilen = sizeof(MD5result) / sizeof(MD5result[0]);
@@ -319,6 +330,11 @@ LatestMsgResult AudioAlarmServer::procLatestAlarmMsg(const AlarmMsg&& msg) {
 		return LatestMsgResult::DownLoadFailed;
 	}
 
+	if (!pcmRateDownSample(msg.fileName, msg.md5Value)) {
+		LOG(ERROR) << "down sample failed when process the latest alarm message,message id:" << msg.msgId << ",url:" << msg.downloadUrl;
+		return LatestMsgResult::DownSampleFailed;
+	}
+
 	std::string strDev = msg.devIp + "_" + std::to_string(msg.devPort);
 	{
 		std::lock_guard<std::mutex> lk(mutexAlarming);
@@ -326,7 +342,9 @@ LatestMsgResult AudioAlarmServer::procLatestAlarmMsg(const AlarmMsg&& msg) {
 		uint32 id = mapAlarmingMsgId[strDev];
 		if (id) {
 			std::shared_ptr<CameraSdk> ptrCamera = mapAlarmingCameraSdk[id];
-			ptrCamera->UpdateAlarmInfo(msg.fileName, msg.playDuration);
+			std::string strOutputPcmName = msg.fileName.substr(0, msg.fileName.find_last_of("."));
+			strOutputPcmName = strOutputPcmName + "_" + msg.md5Value + ".pcm";
+			ptrCamera->UpdateAlarmInfo(strOutputPcmName, msg.playDuration);
 			return LatestMsgResult::Processed;
 		}
 		else {
@@ -335,4 +353,65 @@ LatestMsgResult AudioAlarmServer::procLatestAlarmMsg(const AlarmMsg&& msg) {
 
 		return LatestMsgResult::DownLoadOnly;
 	}
+}
+
+bool AudioAlarmServer::pcmRateDownSample(const std::string& name, const std::string& value) {
+	std::string strOutputPcmName = name.substr(0, name.find_last_of("."));
+	strOutputPcmName = strOutputPcmName + "_" + value+".pcm";
+
+	std::string strSuffix = name.substr(name.find_last_of(".")+1);
+	if ("wav"!= strSuffix) {
+		LOG(ERROR) << name << " is not supported,just support wav file format";
+		return true;	
+	}
+
+	struct stat st;
+	if (!stat(strOutputPcmName.c_str(), &st)) {
+		LOG(ERROR) << "the pcm file alread exists";
+		return true;
+	}
+
+	std::ifstream ifile(name.c_str(), std::ios::in | std::ios::binary);
+	if (ifile.fail()|| !ifile.is_open()) {
+		LOG(ERROR) << "open the source audio file failed when down sample pcm file";
+		return false;
+	}
+
+	std::ofstream outputFile(strOutputPcmName.c_str(), std::ios::binary);
+	if (!outputFile.is_open()) {
+		LOG(ERROR) << "open the destination audio file failed when down sample pcm file";
+		return false;
+	}
+
+	/*short tempRead = 0;
+	short tempSum = 0;
+	int flag = 0;*/
+	/*constexpr int downSampleRate = 2;
+	constexpr int blockAlign = 2;*/
+	char pcmDataBuff[PcmDataBufferLength];
+	int halfPcmDataBuffLen = PcmDataBufferLength / 2;
+	while (!ifile.eof()) {	
+		ifile.read(pcmDataBuff, PcmDataBufferLength);
+		//flag++;
+		//if (flag == downSampleRate)
+		//{
+		//	flag = 0;
+		//	tempSum = tempSum / downSampleRate;
+		//	//fwrite(&tempSum, bit / 8, 1, fp_dis);
+		//	outputFile.write(pcmDataBuff, PcmDataBufferLength/2);
+		//	tempSum = 0;
+		//}
+
+		for (int idx = 0; idx < halfPcmDataBuffLen;idx++) {
+			pcmDataBuff[idx] = pcmDataBuff[idx] / 2 + pcmDataBuff[idx+ halfPcmDataBuffLen] / 2;
+		}
+
+		outputFile.write(pcmDataBuff, PcmDataBufferLength / 2);
+	}
+
+	outputFile.flush();
+	ifile.close();
+	outputFile.close();
+
+	return true;
 }

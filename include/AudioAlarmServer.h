@@ -38,6 +38,7 @@ private:
 	bool checkExists(const std::string& name, const std::string& value);
 	std::string getFileMd5sumValue(const std::string& strFilePath);
 	LatestMsgResult procLatestAlarmMsg(const AlarmMsg&& msg);
+	bool pcmRateDownSample(const std::string& name, const std::string& value);
 
 private:
 	struct InterruptMsg {
@@ -48,7 +49,7 @@ private:
 		InterruptMsg() {
 			bValid = false;
 			playDuration = 0;
-			timePoint = std::chrono::high_resolution_clock::now();		
+			timePoint = std::chrono::high_resolution_clock::now();
 		}
 	};
 
@@ -58,6 +59,8 @@ private:
 
 	std::shared_ptr<audio_alarm::LockFreeQueueCpp11<AlarmMsg>> ptrMsgQueue;
 	std::unique_ptr<audio_alarm::ThreadPool> ptrThreadPool;
+
+	std::mutex mutexGetAudioFile;
 
 	std::mutex mutexInter;
 	std::map<std::string, std::map<uint32, InterruptMsg>> mapInter;

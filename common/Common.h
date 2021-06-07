@@ -13,6 +13,7 @@ enum class CameraType : unsigned char {
 
 enum class LatestMsgResult :unsigned char {
 	DownLoadFailed,
+	DownSampleFailed,
 	DownLoadOnly,
 	Processed,
 };
