@@ -34,7 +34,7 @@ private:
 	std::mutex mutexAudioFile;
 	//std::unique_ptr<std::ifstream> ptrAudioFile;
 	std::ifstream audioFile;
-	
+
 	BYTE G711EncBufA[G711_AUDDECSIZE];
 	char fileContentBuff[G711_AUDDECSIZE];
 	std::chrono::time_point<std::chrono::high_resolution_clock> timePointStart;

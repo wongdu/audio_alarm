@@ -138,6 +138,7 @@ void AudioAlarmServer::AddAlarmMsg(const AlarmMsg&& msg) {
 		}
 	}
 
+	LOG(INFO) << "add alarm message into the thread poll,message id:" << msg.msgId;
 	InterruptMsg interMsg;
 	interMsg.bValid = true;
 	interMsg.playDuration = msg.playDuration;
@@ -198,7 +199,7 @@ void AudioAlarmServer::procAlarmMsg(const AlarmMsg&& msg) {
 
 	if (!pcmRateDownSample(msg.fileName, msg.md5Value)) {
 		LOG(ERROR) << "down sample failed,message id:" << msg.msgId << ",url:" << msg.downloadUrl;
-		return ;
+		return;
 	}
 
 	LOG(INFO) << "get audio file successful,message id:" << msg.msgId << ",camera type:" << (CameraType::DaHua == msg.cameraType ? "daHua" : "hiK");
@@ -325,6 +326,8 @@ std::string AudioAlarmServer::getFileMd5sumValue(const std::string& strFilePath)
 }
 
 LatestMsgResult AudioAlarmServer::procLatestAlarmMsg(const AlarmMsg&& msg) {
+	LOG(INFO) << "process the latest alarm message,message id:" << msg.msgId;
+
 	if (!getAudioFile(msg.downloadUrl, msg.fileName, msg.md5Value)) {
 		LOG(ERROR) << "download failed when process the latest alarm message,message id:" << msg.msgId << ",url:" << msg.downloadUrl;
 		return LatestMsgResult::DownLoadFailed;
@@ -349,6 +352,7 @@ LatestMsgResult AudioAlarmServer::procLatestAlarmMsg(const AlarmMsg&& msg) {
 		}
 		else {
 			mapAlarmingMsgId.erase(strDev);
+			LOG(INFO) << "just download sussessfully";
 		}
 
 		return LatestMsgResult::DownLoadOnly;
@@ -357,12 +361,12 @@ LatestMsgResult AudioAlarmServer::procLatestAlarmMsg(const AlarmMsg&& msg) {
 
 bool AudioAlarmServer::pcmRateDownSample(const std::string& name, const std::string& value) {
 	std::string strOutputPcmName = name.substr(0, name.find_last_of("."));
-	strOutputPcmName = strOutputPcmName + "_" + value+".pcm";
+	strOutputPcmName = strOutputPcmName + "_" + value + ".pcm";
 
-	std::string strSuffix = name.substr(name.find_last_of(".")+1);
-	if ("wav"!= strSuffix) {
+	std::string strSuffix = name.substr(name.find_last_of(".") + 1);
+	if ("wav" != strSuffix) {
 		LOG(ERROR) << name << " is not supported,just support wav file format";
-		return true;	
+		return true;
 	}
 
 	struct stat st;
@@ -372,7 +376,7 @@ bool AudioAlarmServer::pcmRateDownSample(const std::string& name, const std::str
 	}
 
 	std::ifstream ifile(name.c_str(), std::ios::in | std::ios::binary);
-	if (ifile.fail()|| !ifile.is_open()) {
+	if (ifile.fail() || !ifile.is_open()) {
 		LOG(ERROR) << "open the source audio file failed when down sample pcm file";
 		return false;
 	}
@@ -383,27 +387,12 @@ bool AudioAlarmServer::pcmRateDownSample(const std::string& name, const std::str
 		return false;
 	}
 
-	/*short tempRead = 0;
-	short tempSum = 0;
-	int flag = 0;*/
-	/*constexpr int downSampleRate = 2;
-	constexpr int blockAlign = 2;*/
 	char pcmDataBuff[PcmDataBufferLength];
 	int halfPcmDataBuffLen = PcmDataBufferLength / 2;
-	while (!ifile.eof()) {	
+	while (!ifile.eof()) {
 		ifile.read(pcmDataBuff, PcmDataBufferLength);
-		//flag++;
-		//if (flag == downSampleRate)
-		//{
-		//	flag = 0;
-		//	tempSum = tempSum / downSampleRate;
-		//	//fwrite(&tempSum, bit / 8, 1, fp_dis);
-		//	outputFile.write(pcmDataBuff, PcmDataBufferLength/2);
-		//	tempSum = 0;
-		//}
-
-		for (int idx = 0; idx < halfPcmDataBuffLen;idx++) {
-			pcmDataBuff[idx] = pcmDataBuff[idx] / 2 + pcmDataBuff[idx+ halfPcmDataBuffLen] / 2;
+		for (int idx = 0; idx < halfPcmDataBuffLen; idx++) {
+			pcmDataBuff[idx] = pcmDataBuff[idx] / 2 + pcmDataBuff[idx + halfPcmDataBuffLen] / 2;
 		}
 
 		outputFile.write(pcmDataBuff, PcmDataBufferLength / 2);

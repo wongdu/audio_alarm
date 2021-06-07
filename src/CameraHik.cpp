@@ -44,14 +44,14 @@ bool CameraHik::LoginDvr(const std::string& ip, const uint32 port, const std::st
 	m_pG711Enc = NET_DVR_InitG711Encoder(&struEncInfo711);
 	if ((long)m_pG711Enc == -1) {
 		LOG(ERROR) << "initialize audio encoder failed:" << NET_DVR_GetLastError() << ",message:" << NET_DVR_GetErrorMsg();
-		return false;	
+		return false;
 	}
 
 	return true;
 }
 
 void CameraHik::LogoutDvr() {
-	if (lVoiceHanle>=0) {
+	if (lVoiceHanle >= 0) {
 		NET_DVR_StopVoiceCom(lVoiceHanle);
 	}
 	if (m_pG711Enc) {
@@ -66,14 +66,16 @@ void CameraHik::SetAudioFileName(const std::string& fileName, uint32 duration) {
 	playDuration = duration;
 }
 
-void CameraHik::UpdateAlarmInfo(const std::string& fileName, uint32 duration) {	
+void CameraHik::UpdateAlarmInfo(const std::string& fileName, uint32 duration) {
+	LOG(INFO) << "update alarm information,file name:" << fileName << ",duration:" << duration;
+
 	{
 		std::lock_guard<std::mutex> lk(mutexAudioFile);
 		strAudioFileName = fileName;
 		playDuration = duration;
 
 		if (audioFile.is_open()) {
-			LOG(INFO) << "update the audio file name:" << fileName <<" failed";
+			LOG(INFO) << "update the audio file name:" << fileName << " failed";
 			audioFile.close();
 		}
 
@@ -85,12 +87,12 @@ void CameraHik::UpdateAlarmInfo(const std::string& fileName, uint32 duration) {
 }
 
 void CameraHik::StartAlarm() {
-	assert(lVoiceHanle<0);
-	assert(lLoginID >=0);
+	assert(lVoiceHanle < 0);
+	assert(lLoginID >= 0);
 
-	lVoiceHanle = NET_DVR_StartVoiceCom_MR_V30(lLoginID,1, fDVRVoiceDataCallBack,(void*)this);
+	lVoiceHanle = NET_DVR_StartVoiceCom_MR_V30(lLoginID, 1, fDVRVoiceDataCallBack, (void*)this);
 	if (lVoiceHanle == -1) {
-		LOG(ERROR) << "start voice communication failed,error code:"<< NET_DVR_GetLastError()<<",message:"<< NET_DVR_GetErrorMsg();
+		LOG(ERROR) << "start voice communication failed,error code:" << NET_DVR_GetLastError() << ",message:" << NET_DVR_GetErrorMsg();
 		return;
 	}
 
@@ -101,7 +103,7 @@ std::string CameraHik::GetDevInfo() {
 	return devIp + "_" + std::to_string(devPort);
 }
 
-void CameraHik::sendAudioAlarmData() {	
+void CameraHik::sendAudioAlarmData() {
 	{
 		std::lock_guard<std::mutex> lk(mutexAudioFile);
 		if (audioFile.is_open()) {
@@ -117,13 +119,13 @@ void CameraHik::sendAudioAlarmData() {
 		return;
 	}
 
-	timePointStart= std::chrono::high_resolution_clock::now();
+	timePointStart = std::chrono::high_resolution_clock::now();
 	while (true)
 	{
 		timePointCurrent = std::chrono::high_resolution_clock::now();
 		std::chrono::duration<double> diff = timePointCurrent - timePointStart;
 		if (diff.count() >= playDuration) {
-			break;		
+			break;
 		}
 		memset(G711EncBufA, 0, G711_AUDDECSIZE);
 
@@ -134,11 +136,11 @@ void CameraHik::sendAudioAlarmData() {
 				audioFile.clear();
 				audioFile.seekg(0, std::ios::beg);
 			}
-			
+
 			memset(fileContentBuff, 0, G711_AUDDECSIZE);
 			audioFile.read(fileContentBuff, G711_AUDDECSIZE);
 		}
-				
+
 		//NET_DVR_EncodeG711Frame(1, (BYTE*)fileContentBuff, G711EncBufA);
 
 		NET_DVR_AUDIOENC_PROCESS_PARAM struEncProcParam = { 0 };
@@ -148,25 +150,30 @@ void CameraHik::sendAudioAlarmData() {
 
 		NET_DVR_EncodeG711Frame(m_pG711Enc, &struEncProcParam);
 
-		if (!NET_DVR_VoiceComSendData(lVoiceHanle, (char*)G711EncBufA, G711_AUDDECSIZE/2)) {
+		if (!NET_DVR_VoiceComSendData(lVoiceHanle, (char*)G711EncBufA, G711_AUDDECSIZE / 2)) {
 			LOG(ERROR) << "start voice communication failed,error code:" << NET_DVR_GetLastError() << ",message:" << NET_DVR_GetErrorMsg();
-			continue;		
+			continue;
 		}
 		//std::this_thread::sleep_for(20ms);
 		//std::this_thread::sleep_for(std::chrono::microseconds(20));
-		std::this_thread::sleep_for(std::chrono::milliseconds(10));
+		std::this_thread::sleep_for(std::chrono::milliseconds(20));
 	}
 
 	LOG(INFO) << "send audio alarm data complete";
+
+	std::lock_guard<std::mutex> lk(mutexAudioFile);
+	if (audioFile.is_open()) {
+		audioFile.close();
+	}
 }
 
 void CALLBACK  fDVRVoiceDataCallBack(LONG  lVoiceComHandle, char* pRecvDataBuffer, DWORD  dwBufSize, BYTE  byAudioFlag, void* pUser)
 {
-	assert(pRecvDataBuffer);	
+	assert(pRecvDataBuffer);
 	switch (byAudioFlag)
 	{
 	case 0:
-		LOG(INFO) << "local audio data" ;
+		LOG(INFO) << "local audio data";
 		break;
 	case 1:
 		//LOG(INFO) << "Input data size:"<< dwBufSize;
