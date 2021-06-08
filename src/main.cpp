@@ -20,15 +20,20 @@ int main(int argc, char* argv[]) {
 	FLAGS_colorlogtostderr = false;
 	FLAGS_alsologtostderr = true;
 	FLAGS_timestamp_in_logfile_name = true;
-	FLAGS_max_log_size = 100; //MB
+	FLAGS_logbufsecs = 0;
+	FLAGS_max_log_size = 10;  //MB
 
 	// Make sure stderr is not buffered as stderr seems to be buffered on recent windows.
 	setbuf(stderr, NULL);
 
 	google::InitGoogleLogging(argv[0]);
 
-	//google::SetLogDestination(google::GLOG_INFO, local_conf_.log_path.c_str());
-	google::SetLogDestination(google::GLOG_INFO, get_current_dir_name());
+	std::string strLogPath = get_current_dir_name();
+	strLogPath = strLogPath.substr(0, strLogPath.find_last_of("/")+1);
+	strLogPath = strLogPath + "log/auido_alarm_";
+
+	//google::SetLogDestination(google::GLOG_INFO, get_current_dir_name());
+	google::SetLogDestination(google::GLOG_INFO, strLogPath.c_str());
 	google::InstallFailureSignalHandler();
 	google::InstallFailureWriter(&SignalHandle);
 
