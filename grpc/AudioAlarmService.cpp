@@ -42,7 +42,19 @@ void AudioAlarmService::Initialize(std::weak_ptr<AudioAlarmServer> alarmServer) 
 	alarmMsg.cameraType = static_cast<CameraType>(cameraType);
 	alarmMsg.devIp = request->dev_ip();
 	alarmMsg.devPort = request->dev_port();
-	alarmMsg.playDuration = request->play_duration();
+
+	audioalarm::v1::PlayTimeType type = request->play_time_type();
+	if (audioalarm::v1::PlayTimeType::Count ==type) {
+		alarmMsg.playTimeType= PlayTimeType::Count;
+	}
+	else if(audioalarm::v1::PlayTimeType::Duration == type) {
+		alarmMsg.playTimeType= PlayTimeType::Duration;
+	}
+	else {
+		alarmMsg.playTimeType= PlayTimeType::UnSupported;
+	}
+	alarmMsg.playTime = request->play_time();
+
 	alarmMsg.userName = request->user_name();
 	alarmMsg.userPassword = request->user_password();
 	alarmMsg.downloadUrl = request->download_url();
@@ -77,9 +89,9 @@ void AudioAlarmService::Initialize(std::weak_ptr<AudioAlarmServer> alarmServer) 
 		return ::grpc::Status(::grpc::StatusCode::INVALID_ARGUMENT, "");
 	}
 
-	if (alarmMsg.playDuration == 0) {
-		LOG(ERROR) << "play duration should not be zero";
-		response->set_code(audioalarm::v1::Err_Play_Duration_Not_Set);
+	if (alarmMsg.playTime == 0 || (alarmMsg.playTimeType != PlayTimeType::Count && alarmMsg.playTimeType != PlayTimeType::Duration)) {
+		LOG(ERROR) << "play time error,playTime:"<< alarmMsg.playTime<<",type:"<<static_cast<unsigned int>(alarmMsg.playTimeType);
+		response->set_code(audioalarm::v1::Err_Play_Time_Error);
 		response->set_message("play duration should not be zero");
 		return ::grpc::Status(::grpc::StatusCode::INVALID_ARGUMENT, "");
 	}

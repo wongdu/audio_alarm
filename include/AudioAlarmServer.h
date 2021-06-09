@@ -43,17 +43,18 @@ private:
 private:
 	struct InterruptMsg {
 		bool bValid;
-		uint32 playDuration;
+		uint32 flagTime;
 		std::chrono::time_point<std::chrono::high_resolution_clock> timePoint;
 
 		InterruptMsg() {
 			bValid = false;
-			playDuration = 0;
+			flagTime = 0;
 			timePoint = std::chrono::high_resolution_clock::now();
 		}
 	};
 
 private:
+
 	std::shared_ptr<AudioAlarmService> ptrAlarmService;
 	std::unique_ptr<grpc::Server> ptrAlarmServer;
 

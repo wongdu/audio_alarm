@@ -30,7 +30,9 @@ constexpr AlarmRequest::AlarmRequest(
   , camera_type_(0)
 
   , dev_port_(0u)
-  , play_duration_(0u){}
+  , play_time_type_(0)
+
+  , play_time_(0u){}
 struct AlarmRequestDefaultTypeInternal {
   constexpr AlarmRequestDefaultTypeInternal()
     : _instance(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized{}) {}
@@ -57,7 +59,7 @@ PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT AlarmReplyDefaultTypeInternal _
 }  // namespace v1
 }  // namespace audioalarm
 static ::PROTOBUF_NAMESPACE_ID::Metadata file_level_metadata_alarm_2eproto[2];
-static const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* file_level_enum_descriptors_alarm_2eproto[2];
+static const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* file_level_enum_descriptors_alarm_2eproto[3];
 static constexpr ::PROTOBUF_NAMESPACE_ID::ServiceDescriptor const** file_level_service_descriptors_alarm_2eproto = nullptr;
 
 const ::PROTOBUF_NAMESPACE_ID::uint32 TableStruct_alarm_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
@@ -75,7 +77,8 @@ const ::PROTOBUF_NAMESPACE_ID::uint32 TableStruct_alarm_2eproto::offsets[] PROTO
   PROTOBUF_FIELD_OFFSET(::audioalarm::v1::AlarmRequest, download_url_),
   PROTOBUF_FIELD_OFFSET(::audioalarm::v1::AlarmRequest, file_name_),
   PROTOBUF_FIELD_OFFSET(::audioalarm::v1::AlarmRequest, md5_value_),
-  PROTOBUF_FIELD_OFFSET(::audioalarm::v1::AlarmRequest, play_duration_),
+  PROTOBUF_FIELD_OFFSET(::audioalarm::v1::AlarmRequest, play_time_type_),
+  PROTOBUF_FIELD_OFFSET(::audioalarm::v1::AlarmRequest, play_time_),
   ~0u,  // no _has_bits_
   PROTOBUF_FIELD_OFFSET(::audioalarm::v1::AlarmReply, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -86,7 +89,7 @@ const ::PROTOBUF_NAMESPACE_ID::uint32 TableStruct_alarm_2eproto::offsets[] PROTO
 };
 static const ::PROTOBUF_NAMESPACE_ID::internal::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
   { 0, -1, sizeof(::audioalarm::v1::AlarmRequest)},
-  { 15, -1, sizeof(::audioalarm::v1::AlarmReply)},
+  { 16, -1, sizeof(::audioalarm::v1::AlarmReply)},
 };
 
 static ::PROTOBUF_NAMESPACE_ID::Message const * const file_default_instances[] = {
@@ -95,28 +98,31 @@ static ::PROTOBUF_NAMESPACE_ID::Message const * const file_default_instances[] =
 };
 
 const char descriptor_table_protodef_alarm_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) =
-  "\n\013alarm.proto\022\raudioalarm.v1\"\355\001\n\014AlarmRe"
+  "\n\013alarm.proto\022\raudioalarm.v1\"\236\002\n\014AlarmRe"
   "quest\022\016\n\006msg_id\030\001 \001(\r\022.\n\013camera_type\030\002 \001"
   "(\0162\031.audioalarm.v1.CameraType\022\016\n\006dev_ip\030"
   "\003 \001(\t\022\020\n\010dev_port\030\004 \001(\r\022\021\n\tuser_name\030\005 \001"
   "(\t\022\025\n\ruser_password\030\006 \001(\t\022\024\n\014download_ur"
   "l\030\007 \001(\t\022\021\n\tfile_name\030\010 \001(\t\022\021\n\tmd5_value\030"
-  "\t \001(\t\022\025\n\rplay_duration\030\n \001(\r\"H\n\nAlarmRep"
-  "ly\022)\n\004code\030\001 \001(\0162\033.audioalarm.v1.Respons"
-  "eCode\022\017\n\007message\030\002 \001(\t*-\n\nCameraType\022\013\n\007"
-  "Unknown\020\000\022\t\n\005DaHua\020\001\022\007\n\003HiK\020\002*\330\001\n\014Respon"
-  "seCode\022\n\n\006Ok_200\020\000\022\032\n\026Err_Message_Id_Not"
-  "_Set\020\001\022\032\n\026Err_Camera_Unsupported\020\002\022\030\n\024Er"
-  "r_Device_Not_Found\020\003\022\037\n\033Err_Device_Login"
-  "_Incomplete\020\004\022\035\n\031Err_Audio_File_Incomple"
-  "te\020\005\022\035\n\031Err_Play_Duration_Not_Set\020\006\022\013\n\007E"
-  "rr_500\020\0072[\n\014AlarmService\022K\n\017SetAlarmMess"
-  "age\022\033.audioalarm.v1.AlarmRequest\032\031.audio"
-  "alarm.v1.AlarmReply\"\000b\006proto3"
+  "\t \001(\t\0223\n\016play_time_type\030\n \001(\0162\033.audioala"
+  "rm.v1.PlayTimeType\022\021\n\tplay_time\030\013 \001(\r\"H\n"
+  "\nAlarmReply\022)\n\004code\030\001 \001(\0162\033.audioalarm.v"
+  "1.ResponseCode\022\017\n\007message\030\002 \001(\t*-\n\nCamer"
+  "aType\022\013\n\007Unknown\020\000\022\t\n\005DaHua\020\001\022\007\n\003HiK\020\002*\322"
+  "\001\n\014ResponseCode\022\n\n\006Ok_200\020\000\022\032\n\026Err_Messa"
+  "ge_Id_Not_Set\020\001\022\032\n\026Err_Camera_Unsupporte"
+  "d\020\002\022\030\n\024Err_Device_Not_Found\020\003\022\037\n\033Err_Dev"
+  "ice_Login_Incomplete\020\004\022\035\n\031Err_Audio_File"
+  "_Incomplete\020\005\022\027\n\023Err_Play_Time_Error\020\006\022\013"
+  "\n\007Err_500\020\007*8\n\014PlayTimeType\022\017\n\013UnSupport"
+  "ed\020\000\022\t\n\005Count\020\001\022\014\n\010Duration\020\0022[\n\014AlarmSe"
+  "rvice\022K\n\017SetAlarmMessage\022\033.audioalarm.v1"
+  ".AlarmRequest\032\031.audioalarm.v1.AlarmReply"
+  "\"\000b\006proto3"
   ;
 static ::PROTOBUF_NAMESPACE_ID::internal::once_flag descriptor_table_alarm_2eproto_once;
 const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_alarm_2eproto = {
-  false, false, 709, descriptor_table_protodef_alarm_2eproto, "alarm.proto", 
+  false, false, 810, descriptor_table_protodef_alarm_2eproto, "alarm.proto", 
   &descriptor_table_alarm_2eproto_once, nullptr, 0, 2,
   schemas, file_default_instances, TableStruct_alarm_2eproto::offsets,
   file_level_metadata_alarm_2eproto, file_level_enum_descriptors_alarm_2eproto, file_level_service_descriptors_alarm_2eproto,
@@ -160,6 +166,21 @@ bool ResponseCode_IsValid(int value) {
     case 5:
     case 6:
     case 7:
+      return true;
+    default:
+      return false;
+  }
+}
+
+const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* PlayTimeType_descriptor() {
+  ::PROTOBUF_NAMESPACE_ID::internal::AssignDescriptors(&descriptor_table_alarm_2eproto);
+  return file_level_enum_descriptors_alarm_2eproto[2];
+}
+bool PlayTimeType_IsValid(int value) {
+  switch (value) {
+    case 0:
+    case 1:
+    case 2:
       return true;
     default:
       return false;
@@ -213,8 +234,8 @@ AlarmRequest::AlarmRequest(const AlarmRequest& from)
       GetArena());
   }
   ::memcpy(&msg_id_, &from.msg_id_,
-    static_cast<size_t>(reinterpret_cast<char*>(&play_duration_) -
-    reinterpret_cast<char*>(&msg_id_)) + sizeof(play_duration_));
+    static_cast<size_t>(reinterpret_cast<char*>(&play_time_) -
+    reinterpret_cast<char*>(&msg_id_)) + sizeof(play_time_));
   // @@protoc_insertion_point(copy_constructor:audioalarm.v1.AlarmRequest)
 }
 
@@ -227,8 +248,8 @@ file_name_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAl
 md5_value_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 ::memset(reinterpret_cast<char*>(this) + static_cast<size_t>(
     reinterpret_cast<char*>(&msg_id_) - reinterpret_cast<char*>(this)),
-    0, static_cast<size_t>(reinterpret_cast<char*>(&play_duration_) -
-    reinterpret_cast<char*>(&msg_id_)) + sizeof(play_duration_));
+    0, static_cast<size_t>(reinterpret_cast<char*>(&play_time_) -
+    reinterpret_cast<char*>(&msg_id_)) + sizeof(play_time_));
 }
 
 AlarmRequest::~AlarmRequest() {
@@ -270,8 +291,8 @@ void AlarmRequest::Clear() {
   file_name_.ClearToEmpty();
   md5_value_.ClearToEmpty();
   ::memset(&msg_id_, 0, static_cast<size_t>(
-      reinterpret_cast<char*>(&play_duration_) -
-      reinterpret_cast<char*>(&msg_id_)) + sizeof(play_duration_));
+      reinterpret_cast<char*>(&play_time_) -
+      reinterpret_cast<char*>(&msg_id_)) + sizeof(play_time_));
   _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
@@ -358,10 +379,18 @@ const char* AlarmRequest::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_I
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
-      // uint32 play_duration = 10;
+      // .audioalarm.v1.PlayTimeType play_time_type = 10;
       case 10:
         if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 80)) {
-          play_duration_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
+          ::PROTOBUF_NAMESPACE_ID::uint64 val = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
+          CHK_(ptr);
+          _internal_set_play_time_type(static_cast<::audioalarm::v1::PlayTimeType>(val));
+        } else goto handle_unusual;
+        continue;
+      // uint32 play_time = 11;
+      case 11:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 88)) {
+          play_time_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
@@ -472,10 +501,17 @@ failure:
         9, this->_internal_md5_value(), target);
   }
 
-  // uint32 play_duration = 10;
-  if (this->play_duration() != 0) {
+  // .audioalarm.v1.PlayTimeType play_time_type = 10;
+  if (this->play_time_type() != 0) {
     target = stream->EnsureSpace(target);
-    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt32ToArray(10, this->_internal_play_duration(), target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteEnumToArray(
+      10, this->_internal_play_time_type(), target);
+  }
+
+  // uint32 play_time = 11;
+  if (this->play_time() != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt32ToArray(11, this->_internal_play_time(), target);
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
@@ -556,11 +592,17 @@ size_t AlarmRequest::ByteSizeLong() const {
         this->_internal_dev_port());
   }
 
-  // uint32 play_duration = 10;
-  if (this->play_duration() != 0) {
+  // .audioalarm.v1.PlayTimeType play_time_type = 10;
+  if (this->play_time_type() != 0) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::EnumSize(this->_internal_play_time_type());
+  }
+
+  // uint32 play_time = 11;
+  if (this->play_time() != 0) {
     total_size += 1 +
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt32Size(
-        this->_internal_play_duration());
+        this->_internal_play_time());
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
@@ -621,8 +663,11 @@ void AlarmRequest::MergeFrom(const AlarmRequest& from) {
   if (from.dev_port() != 0) {
     _internal_set_dev_port(from._internal_dev_port());
   }
-  if (from.play_duration() != 0) {
-    _internal_set_play_duration(from._internal_play_duration());
+  if (from.play_time_type() != 0) {
+    _internal_set_play_time_type(from._internal_play_time_type());
+  }
+  if (from.play_time() != 0) {
+    _internal_set_play_time(from._internal_play_time());
   }
 }
 
@@ -654,8 +699,8 @@ void AlarmRequest::InternalSwap(AlarmRequest* other) {
   file_name_.Swap(&other->file_name_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
   md5_value_.Swap(&other->md5_value_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
   ::PROTOBUF_NAMESPACE_ID::internal::memswap<
-      PROTOBUF_FIELD_OFFSET(AlarmRequest, play_duration_)
-      + sizeof(AlarmRequest::play_duration_)
+      PROTOBUF_FIELD_OFFSET(AlarmRequest, play_time_)
+      + sizeof(AlarmRequest::play_time_)
       - PROTOBUF_FIELD_OFFSET(AlarmRequest, msg_id_)>(
           reinterpret_cast<char*>(&msg_id_),
           reinterpret_cast<char*>(&other->msg_id_));

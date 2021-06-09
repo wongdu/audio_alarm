@@ -61,18 +61,22 @@ void CameraHik::LogoutDvr() {
 	NET_DVR_Logout(lLoginID);
 }
 
-void CameraHik::SetAudioFileName(const std::string& fileName, uint32 duration) {
+void CameraHik::SetAudioFileName(const std::string& fileName, PlayTimeType type, uint32 size) {
 	strAudioFileName = fileName;
-	playDuration = duration;
+	playTimeType = type;
+	playTime = size;
+	playedTime = 0;
 }
 
-void CameraHik::UpdateAlarmInfo(const std::string& fileName, uint32 duration) {
-	LOG(INFO) << "update alarm information,file name:" << fileName << ",duration:" << duration;
+void CameraHik::UpdateAlarmInfo(const std::string& fileName, PlayTimeType type, uint32 size) {
+	LOG(INFO) << "update alarm information,file name:" << fileName << ",play time:" << size << ",time type:" << static_cast<unsigned int>(type);
 
 	{
 		std::lock_guard<std::mutex> lk(mutexAudioFile);
 		strAudioFileName = fileName;
-		playDuration = duration;
+		playTimeType = type;
+		playTime = size;
+		playedTime = 0;
 
 		if (audioFile.is_open()) {
 			LOG(INFO) << "update the audio file name:" << fileName << " failed";
@@ -122,10 +126,20 @@ void CameraHik::sendAudioAlarmData() {
 	timePointStart = std::chrono::high_resolution_clock::now();
 	while (true)
 	{
-		timePointCurrent = std::chrono::high_resolution_clock::now();
-		std::chrono::duration<double> diff = timePointCurrent - timePointStart;
-		if (diff.count() >= playDuration) {
-			break;
+		if (playTimeType == PlayTimeType::Duration) {
+			timePointCurrent = std::chrono::high_resolution_clock::now();
+			std::chrono::duration<double> diff = timePointCurrent - timePointStart;
+			if (diff.count() >= playTime) {
+				break;
+			}
+		}
+		else if (playTimeType == PlayTimeType::Count) {
+			if (playedTime>= playTime) {
+				break;			
+			}
+		}
+		else {
+			break;		
 		}
 		memset(G711EncBufA, 0, G711_AUDDECSIZE);
 
@@ -133,6 +147,7 @@ void CameraHik::sendAudioAlarmData() {
 			std::lock_guard<std::mutex> lk(mutexAudioFile);
 			if (audioFile.eof())
 			{
+				playedTime++;
 				audioFile.clear();
 				audioFile.seekg(0, std::ios::beg);
 			}

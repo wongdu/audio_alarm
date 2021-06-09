@@ -17,11 +17,11 @@ void CameraDh::LogoutDvr() {
 
 }
 
-void CameraDh::SetAudioFileName(const std::string& fileName, uint32 duration) {
+void CameraDh::SetAudioFileName(const std::string& fileName, PlayTimeType type, uint32 size) {
 
 }
 
-void CameraDh::UpdateAlarmInfo(const std::string& fileName, uint32 duration) {
+void CameraDh::UpdateAlarmInfo(const std::string& fileName, PlayTimeType type, uint32 size) {
 
 }
 

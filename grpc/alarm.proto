@@ -15,8 +15,14 @@ enum ResponseCode {
 	Err_Device_Not_Found = 3;             // device is not found
 	Err_Device_Login_Incomplete = 4;      // user information is incomplete
 	Err_Audio_File_Incomplete = 5;        // audio file information is incomplete
-	Err_Play_Duration_Not_Set = 6;        // play duration is not set
+	Err_Play_Time_Error = 6;        // play duration is not set
 	Err_500 = 7;                          // server inner error
+}
+
+enum PlayTimeType{
+	UnSupported = 0;
+	Count = 1;
+	Duration = 2;
 }
 
 // The request message
@@ -30,7 +36,8 @@ message AlarmRequest {
     string download_url = 7;
     string file_name = 8;
     string md5_value = 9;
-	uint32 play_duration = 10;  // in units of seconds
+	PlayTimeType play_time_type = 10;
+	uint32 play_time = 11;  // in units of seconds
 }
 
 // The response message

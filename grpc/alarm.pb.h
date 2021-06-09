@@ -105,7 +105,7 @@ enum ResponseCode : int {
   Err_Device_Not_Found = 3,
   Err_Device_Login_Incomplete = 4,
   Err_Audio_File_Incomplete = 5,
-  Err_Play_Duration_Not_Set = 6,
+  Err_Play_Time_Error = 6,
   Err_500 = 7,
   ResponseCode_INT_MIN_SENTINEL_DO_NOT_USE_ = std::numeric_limits<::PROTOBUF_NAMESPACE_ID::int32>::min(),
   ResponseCode_INT_MAX_SENTINEL_DO_NOT_USE_ = std::numeric_limits<::PROTOBUF_NAMESPACE_ID::int32>::max()
@@ -128,6 +128,32 @@ inline bool ResponseCode_Parse(
     ::PROTOBUF_NAMESPACE_ID::ConstStringParam name, ResponseCode* value) {
   return ::PROTOBUF_NAMESPACE_ID::internal::ParseNamedEnum<ResponseCode>(
     ResponseCode_descriptor(), name, value);
+}
+enum PlayTimeType : int {
+  UnSupported = 0,
+  Count = 1,
+  Duration = 2,
+  PlayTimeType_INT_MIN_SENTINEL_DO_NOT_USE_ = std::numeric_limits<::PROTOBUF_NAMESPACE_ID::int32>::min(),
+  PlayTimeType_INT_MAX_SENTINEL_DO_NOT_USE_ = std::numeric_limits<::PROTOBUF_NAMESPACE_ID::int32>::max()
+};
+bool PlayTimeType_IsValid(int value);
+constexpr PlayTimeType PlayTimeType_MIN = UnSupported;
+constexpr PlayTimeType PlayTimeType_MAX = Duration;
+constexpr int PlayTimeType_ARRAYSIZE = PlayTimeType_MAX + 1;
+
+const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* PlayTimeType_descriptor();
+template<typename T>
+inline const std::string& PlayTimeType_Name(T enum_t_value) {
+  static_assert(::std::is_same<T, PlayTimeType>::value ||
+    ::std::is_integral<T>::value,
+    "Incorrect type passed to function PlayTimeType_Name.");
+  return ::PROTOBUF_NAMESPACE_ID::internal::NameOfEnum(
+    PlayTimeType_descriptor(), enum_t_value);
+}
+inline bool PlayTimeType_Parse(
+    ::PROTOBUF_NAMESPACE_ID::ConstStringParam name, PlayTimeType* value) {
+  return ::PROTOBUF_NAMESPACE_ID::internal::ParseNamedEnum<PlayTimeType>(
+    PlayTimeType_descriptor(), name, value);
 }
 // ===================================================================
 
@@ -253,7 +279,8 @@ class AlarmRequest PROTOBUF_FINAL :
     kMsgIdFieldNumber = 1,
     kCameraTypeFieldNumber = 2,
     kDevPortFieldNumber = 4,
-    kPlayDurationFieldNumber = 10,
+    kPlayTimeTypeFieldNumber = 10,
+    kPlayTimeFieldNumber = 11,
   };
   // string dev_ip = 3;
   void clear_dev_ip();
@@ -378,13 +405,22 @@ class AlarmRequest PROTOBUF_FINAL :
   void _internal_set_dev_port(::PROTOBUF_NAMESPACE_ID::uint32 value);
   public:
 
-  // uint32 play_duration = 10;
-  void clear_play_duration();
-  ::PROTOBUF_NAMESPACE_ID::uint32 play_duration() const;
-  void set_play_duration(::PROTOBUF_NAMESPACE_ID::uint32 value);
+  // .audioalarm.v1.PlayTimeType play_time_type = 10;
+  void clear_play_time_type();
+  ::audioalarm::v1::PlayTimeType play_time_type() const;
+  void set_play_time_type(::audioalarm::v1::PlayTimeType value);
   private:
-  ::PROTOBUF_NAMESPACE_ID::uint32 _internal_play_duration() const;
-  void _internal_set_play_duration(::PROTOBUF_NAMESPACE_ID::uint32 value);
+  ::audioalarm::v1::PlayTimeType _internal_play_time_type() const;
+  void _internal_set_play_time_type(::audioalarm::v1::PlayTimeType value);
+  public:
+
+  // uint32 play_time = 11;
+  void clear_play_time();
+  ::PROTOBUF_NAMESPACE_ID::uint32 play_time() const;
+  void set_play_time(::PROTOBUF_NAMESPACE_ID::uint32 value);
+  private:
+  ::PROTOBUF_NAMESPACE_ID::uint32 _internal_play_time() const;
+  void _internal_set_play_time(::PROTOBUF_NAMESPACE_ID::uint32 value);
   public:
 
   // @@protoc_insertion_point(class_scope:audioalarm.v1.AlarmRequest)
@@ -403,7 +439,8 @@ class AlarmRequest PROTOBUF_FINAL :
   ::PROTOBUF_NAMESPACE_ID::uint32 msg_id_;
   int camera_type_;
   ::PROTOBUF_NAMESPACE_ID::uint32 dev_port_;
-  ::PROTOBUF_NAMESPACE_ID::uint32 play_duration_;
+  int play_time_type_;
+  ::PROTOBUF_NAMESPACE_ID::uint32 play_time_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_alarm_2eproto;
 };
@@ -999,24 +1036,44 @@ inline void AlarmRequest::set_allocated_md5_value(std::string* md5_value) {
   // @@protoc_insertion_point(field_set_allocated:audioalarm.v1.AlarmRequest.md5_value)
 }
 
-// uint32 play_duration = 10;
-inline void AlarmRequest::clear_play_duration() {
-  play_duration_ = 0u;
+// .audioalarm.v1.PlayTimeType play_time_type = 10;
+inline void AlarmRequest::clear_play_time_type() {
+  play_time_type_ = 0;
 }
-inline ::PROTOBUF_NAMESPACE_ID::uint32 AlarmRequest::_internal_play_duration() const {
-  return play_duration_;
+inline ::audioalarm::v1::PlayTimeType AlarmRequest::_internal_play_time_type() const {
+  return static_cast< ::audioalarm::v1::PlayTimeType >(play_time_type_);
 }
-inline ::PROTOBUF_NAMESPACE_ID::uint32 AlarmRequest::play_duration() const {
-  // @@protoc_insertion_point(field_get:audioalarm.v1.AlarmRequest.play_duration)
-  return _internal_play_duration();
+inline ::audioalarm::v1::PlayTimeType AlarmRequest::play_time_type() const {
+  // @@protoc_insertion_point(field_get:audioalarm.v1.AlarmRequest.play_time_type)
+  return _internal_play_time_type();
 }
-inline void AlarmRequest::_internal_set_play_duration(::PROTOBUF_NAMESPACE_ID::uint32 value) {
+inline void AlarmRequest::_internal_set_play_time_type(::audioalarm::v1::PlayTimeType value) {
   
-  play_duration_ = value;
+  play_time_type_ = value;
 }
-inline void AlarmRequest::set_play_duration(::PROTOBUF_NAMESPACE_ID::uint32 value) {
-  _internal_set_play_duration(value);
-  // @@protoc_insertion_point(field_set:audioalarm.v1.AlarmRequest.play_duration)
+inline void AlarmRequest::set_play_time_type(::audioalarm::v1::PlayTimeType value) {
+  _internal_set_play_time_type(value);
+  // @@protoc_insertion_point(field_set:audioalarm.v1.AlarmRequest.play_time_type)
+}
+
+// uint32 play_time = 11;
+inline void AlarmRequest::clear_play_time() {
+  play_time_ = 0u;
+}
+inline ::PROTOBUF_NAMESPACE_ID::uint32 AlarmRequest::_internal_play_time() const {
+  return play_time_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::uint32 AlarmRequest::play_time() const {
+  // @@protoc_insertion_point(field_get:audioalarm.v1.AlarmRequest.play_time)
+  return _internal_play_time();
+}
+inline void AlarmRequest::_internal_set_play_time(::PROTOBUF_NAMESPACE_ID::uint32 value) {
+  
+  play_time_ = value;
+}
+inline void AlarmRequest::set_play_time(::PROTOBUF_NAMESPACE_ID::uint32 value) {
+  _internal_set_play_time(value);
+  // @@protoc_insertion_point(field_set:audioalarm.v1.AlarmRequest.play_time)
 }
 
 // -------------------------------------------------------------------
@@ -1126,6 +1183,11 @@ template <> struct is_proto_enum< ::audioalarm::v1::ResponseCode> : ::std::true_
 template <>
 inline const EnumDescriptor* GetEnumDescriptor< ::audioalarm::v1::ResponseCode>() {
   return ::audioalarm::v1::ResponseCode_descriptor();
+}
+template <> struct is_proto_enum< ::audioalarm::v1::PlayTimeType> : ::std::true_type {};
+template <>
+inline const EnumDescriptor* GetEnumDescriptor< ::audioalarm::v1::PlayTimeType>() {
+  return ::audioalarm::v1::PlayTimeType_descriptor();
 }
 
 PROTOBUF_NAMESPACE_CLOSE

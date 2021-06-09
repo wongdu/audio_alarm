@@ -3,6 +3,8 @@
 
 #include <string>
 
+#include "Common.h"
+
 using uint32 = unsigned int;
 
 class CameraSdk {
@@ -13,8 +15,8 @@ public:
 public:
 	virtual bool LoginDvr(const std::string& ip, const uint32 port, const std::string& name, const std::string& password) = 0;
 	virtual void LogoutDvr() = 0;
-	virtual void SetAudioFileName(const std::string& fileName, uint32 duration) = 0;
-	virtual void UpdateAlarmInfo(const std::string& fileName, uint32 duration) = 0;
+	virtual void SetAudioFileName(const std::string& fileName, PlayTimeType type, uint32 size) = 0;
+	virtual void UpdateAlarmInfo(const std::string& fileName, PlayTimeType type, uint32 size) = 0;
 	virtual void StartAlarm() = 0;
 	virtual std::string GetDevInfo() = 0;
 
@@ -28,7 +30,10 @@ protected:
 	std::string usrPassword;
 
 	std::string strAudioFileName;
-	uint32 playDuration;
+
+	PlayTimeType playTimeType;
+	uint32 playTime;
+	uint32 playedTime;
 
 private:
 

@@ -17,8 +17,8 @@ public:
 public:
 	virtual bool LoginDvr(const std::string& ip, const uint32 port, const std::string& name, const std::string& password) override;
 	virtual void LogoutDvr() override;
-	virtual void SetAudioFileName(const std::string& fileName, uint32 duration) override;
-	virtual void UpdateAlarmInfo(const std::string& fileName, uint32 duration) override;
+	virtual void SetAudioFileName(const std::string& fileName, PlayTimeType type, uint32 size) override;
+	virtual void UpdateAlarmInfo(const std::string& fileName, PlayTimeType type, uint32 size) override;
 	virtual void StartAlarm() override;
 	virtual std::string GetDevInfo() override;
 

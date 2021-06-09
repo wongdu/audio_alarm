@@ -18,12 +18,19 @@ enum class LatestMsgResult :unsigned char {
 	Processed,
 };
 
+enum class PlayTimeType : unsigned char {
+	UnSupported,
+	Count,
+	Duration,
+};
+
 struct AlarmMsg {
 	uint32 msgId;
 	CameraType cameraType;
 	std::string devIp;
 	uint32 devPort;
-	uint32 playDuration;
+	uint32 playTime;
+	PlayTimeType playTimeType;
 	std::string userName;
 	std::string userPassword;
 	std::string downloadUrl;

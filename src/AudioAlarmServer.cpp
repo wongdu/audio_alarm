@@ -143,7 +143,7 @@ void AudioAlarmServer::AddAlarmMsg(const AlarmMsg&& msg) {
 	LOG(INFO) << "add alarm message into the thread poll,message id:" << msg.msgId;
 	InterruptMsg interMsg;
 	interMsg.bValid = true;
-	interMsg.playDuration = msg.playDuration;
+	interMsg.flagTime = msg.playTime;
 	interMsg.timePoint = std::chrono::high_resolution_clock::now();
 
 	{
@@ -153,7 +153,7 @@ void AudioAlarmServer::AddAlarmMsg(const AlarmMsg&& msg) {
 		if (lastIter != mapDev.rend()) {
 			InterruptMsg lastMsg = lastIter->second;
 			std::chrono::duration<double> diff = interMsg.timePoint - lastMsg.timePoint;
-			if (diff.count() < lastMsg.playDuration) {
+			if (diff.count() < lastMsg.flagTime) {
 				lastIter->second.bValid = false;
 			}
 		}
@@ -185,7 +185,7 @@ void AudioAlarmServer::TaskAlarmMsg() {
 		if (mapDev.size() == 0) {
 			mapInter.erase(strDev);
 		}
-		if (interMsg.playDuration && !interMsg.bValid) {
+		if (interMsg.flagTime && !interMsg.bValid) {
 			return;
 		}
 	}
@@ -228,10 +228,10 @@ void AudioAlarmServer::procAlarmMsg(const AlarmMsg&& msg) {
 		return;
 	}
 
-	LOG(INFO) << "set the audio file name:" << msg.fileName << ",play duration:" << msg.playDuration;
+	LOG(INFO) << "set the audio file name:" << msg.fileName << ",play time:" << msg.playTime << ",time type:" << static_cast<unsigned int>(msg.playTimeType);
 	std::string strOutputPcmName = msg.fileName.substr(0, msg.fileName.find_last_of("."));
 	strOutputPcmName = strOutputPcmName + "_" + msg.md5Value + ".pcm";
-	ptrCamera->SetAudioFileName(strOutputPcmName, msg.playDuration);
+	ptrCamera->SetAudioFileName(strOutputPcmName, msg.playTimeType, msg.playTime);
 
 	ptrCamera->StartAlarm();
 	ptrCamera->LogoutDvr();
@@ -349,7 +349,7 @@ LatestMsgResult AudioAlarmServer::procLatestAlarmMsg(const AlarmMsg&& msg) {
 			std::shared_ptr<CameraSdk> ptrCamera = mapAlarmingCameraSdk[id];
 			std::string strOutputPcmName = msg.fileName.substr(0, msg.fileName.find_last_of("."));
 			strOutputPcmName = strOutputPcmName + "_" + msg.md5Value + ".pcm";
-			ptrCamera->UpdateAlarmInfo(strOutputPcmName, msg.playDuration);
+			ptrCamera->UpdateAlarmInfo(strOutputPcmName, msg.playTimeType, msg.playTime);
 			return LatestMsgResult::Processed;
 		}
 		else {
@@ -373,19 +373,19 @@ bool AudioAlarmServer::pcmRateDownSample(const std::string& name, const std::str
 
 	struct stat st;
 	if (!stat(strOutputPcmName.c_str(), &st)) {
-		LOG(ERROR) << "the pcm file alread exists";
+		LOG(ERROR) << "the pcmFile already exists";
 		return true;
 	}
 
 	std::ifstream ifile(name.c_str(), std::ios::in | std::ios::binary);
 	if (ifile.fail() || !ifile.is_open()) {
-		LOG(ERROR) << "open the source audio file failed when down sample pcm file";
+		LOG(ERROR) << "open the source audio file failed when down sample pcmFile";
 		return false;
 	}
 
 	std::ofstream outputFile(strOutputPcmName.c_str(), std::ios::binary);
 	if (!outputFile.is_open()) {
-		LOG(ERROR) << "open the destination audio file failed when down sample pcm file";
+		LOG(ERROR) << "open the destination audio file failed when down sample pcmFile";
 		return false;
 	}
 
@@ -400,7 +400,7 @@ bool AudioAlarmServer::pcmRateDownSample(const std::string& name, const std::str
 		outputFile.write(pcmDataBuff, PcmDataBufferLength / 2);
 	}
 
-	LOG(INFO) << "down sample audio file complete,file name:" <<name ;
+	LOG(INFO) << "down sample audio file complete,file name:" << name;
 	outputFile.flush();
 	ifile.close();
 	outputFile.close();
